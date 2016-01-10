@@ -15,10 +15,10 @@ namespace CM3D2.SubScreen.Plugin
     PluginFilter("CM3D2x86"),
     PluginFilter("CM3D2VRx64"),
     PluginName("CM3D2 OffScreen"),
-    PluginVersion("0.3.9.3")]
+    PluginVersion("0.3.9.4")]
     public class SubScreen : PluginBase
     {
-        public const string Version = "0.3.9.3";
+        public const string Version = "0.3.9.4";
 
         public readonly string WinFileName = Directory.GetCurrentDirectory() + @"\UnityInjector\Config\SubScreen.png";
 
@@ -117,7 +117,10 @@ namespace CM3D2.SubScreen.Plugin
             SceneADV = 15,
 
             // ダンス:entrance to you
-            SceneDance_ETYL = 20
+            SceneDance_ETYL = 20,
+
+            // ダンス:scarlet leap
+            SceneDance_SCLP = 22
         }
         private enum MenuType
         {
