@@ -139,8 +139,11 @@ Pauseキーでメニューが開きます。
 
 
 ##更新履歴
+####0.3.9.5
+* stellar my tearsに対応
+
 ####0.3.9.4
-scarlet leapに対応
+* scarlet leapに対応
 
 ####0.3.9.3
 ?????
