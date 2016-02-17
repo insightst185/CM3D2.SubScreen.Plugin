@@ -15,10 +15,10 @@ namespace CM3D2.SubScreen.Plugin
     PluginFilter("CM3D2x86"),
     PluginFilter("CM3D2VRx64"),
     PluginName("CM3D2 OffScreen"),
-    PluginVersion("0.3.9.6")]
+    PluginVersion("0.3.9.7")]
     public class SubScreen : PluginBase
     {
-        public const string Version = "0.3.9.6";
+        public const string Version = "0.3.9.7";
 
         public readonly string WinFileName = Directory.GetCurrentDirectory() + @"\UnityInjector\Config\SubScreen.png";
 
@@ -1199,6 +1199,7 @@ namespace CM3D2.SubScreen.Plugin
             outRect.y += outRect.height + pv.Margin;
             if (GUI.Button(outRect, "現在値をプリセットとして保存", bStyle))
             {
+                loadPresetXml();
                 menuType = MenuType.SavePreset;
             }
             outRect.y += outRect.height + pv.Margin;
@@ -1394,7 +1395,7 @@ namespace CM3D2.SubScreen.Plugin
             outRect.width = baseRect.width * 0.7f;
 
             lStyle.fontSize = pv.Font("H2");
-            presetName = GUI.TextField(outRect, presetName, lStyle);
+            presetName = GUI.TextField(outRect, presetName);
             outRect.x = pv.Margin;
             outRect.y += outRect.height + pv.Margin;
             outRect.width = baseRect.width / 2 - pv.Margin;
@@ -1407,8 +1408,10 @@ namespace CM3D2.SubScreen.Plugin
                 }
                 if (presets != null && presets.ContainsKey(presetName))
                 {
-                    // 同名はNG
-                    return;
+                    // 同名は削除してから保存
+                    RemovePreset(presetName);
+                    savePresetXml();
+                    menuType = MenuType.Main;
                 }
                 else
                 {
