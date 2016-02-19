@@ -18,7 +18,7 @@ namespace CM3D2.SubScreen.Plugin
     PluginVersion("0.3.9.7")]
     public class SubScreen : PluginBase
     {
-        public const string Version = "0.3.9.8";
+        public const string Version = "0.3.9.9";
 
         public readonly string WinFileName = Directory.GetCurrentDirectory() + @"\UnityInjector\Config\SubScreen.png";
 
@@ -1393,6 +1393,16 @@ namespace CM3D2.SubScreen.Plugin
             ssParam.fValue[PKeyScreenFilter][PPropScreenFilterGreen] = preset.dParams[PKeyScreenFilter].dValues[PPropScreenFilterGreen];
             ssParam.fValue[PKeyScreenFilter][PPropScreenFilterBlue] = preset.dParams[PKeyScreenFilter].dValues[PPropScreenFilterBlue];
             ssParam.fValue[PKeyScreenFilter][PPropScreenFilterAlpha] = preset.dParams[PKeyScreenFilter].dValues[PPropScreenFilterAlpha];
+
+            // 美しくないが、いい案思いつかなかった。ちかたないね
+            if(goSubCam != null){
+                goSubCam.transform.position = new Vector3(ssParam.fValue[PKeySubCamera][PPropSubCameraLocX],
+                                                          ssParam.fValue[PKeySubCamera][PPropSubCameraLocY],
+                                                          ssParam.fValue[PKeySubCamera][PPropSubCameraLocZ]);
+                goSubCam.transform.eulerAngles = new Vector3(ssParam.fValue[PKeySubCamera][PPropSubCameraAngX],
+                                                             ssParam.fValue[PKeySubCamera][PPropSubCameraAngY],
+                                                             ssParam.fValue[PKeySubCamera][PPropSubCameraAngZ]);
+             }
 
             DebugLog("SetPreset", preset.name);
         }
