@@ -18,7 +18,7 @@ namespace CM3D2.SubScreen.Plugin
     PluginVersion("0.3.9.7")]
     public class SubScreen : PluginBase
     {
-        public const string Version = "0.3.9.7";
+        public const string Version = "0.3.9.8";
 
         public readonly string WinFileName = Directory.GetCurrentDirectory() + @"\UnityInjector\Config\SubScreen.png";
 
@@ -53,6 +53,12 @@ namespace CM3D2.SubScreen.Plugin
         const string PPropSubCameraPosX = "SUB_CAMERA.xMin";
         const string PPropSubCameraPosY = "SUB_CAMERA.yMin";
         const string PPropSubCameraWidth = "SUB_CAMERA.width";
+        const string PPropSubCameraLocX = "SUB_CAMERA.LocX";
+        const string PPropSubCameraLocY = "SUB_CAMERA.LocY";
+        const string PPropSubCameraLocZ = "SUB_CAMERA.LocZ";
+        const string PPropSubCameraAngX = "SUB_CAMERA.AngX";
+        const string PPropSubCameraAngY = "SUB_CAMERA.AngY";
+        const string PPropSubCameraAngZ = "SUB_CAMERA.AngZ";
 
         const string PKeyMainLight = "MAIN_LIGHT";
         const string PPropMainLightLuminance = "MAIN_LIGHT.l";
@@ -652,6 +658,15 @@ namespace CM3D2.SubScreen.Plugin
                     else if (ssParam.bEnabled[PKeyAlwaysLookAtMaid])
                     {
                         goSubCam.transform.LookAt(maid.body0.trsHead.transform);
+                    }
+                    else if (ssParam.bEnabled[PKeySubCamera])
+                    {
+                        goSubCam.transform.position = new Vector3(ssParam.fValue[PKeySubCamera][PPropSubCameraLocX],
+                                                                  ssParam.fValue[PKeySubCamera][PPropSubCameraLocY],
+                                                                  ssParam.fValue[PKeySubCamera][PPropSubCameraLocZ]);
+                        goSubCam.transform.eulerAngles = new Vector3(ssParam.fValue[PKeySubCamera][PPropSubCameraAngX],
+                                                                     ssParam.fValue[PKeySubCamera][PPropSubCameraAngY],
+                                                                     ssParam.fValue[PKeySubCamera][PPropSubCameraAngZ]);
                     }
                     if (ssParam.bEnabled[PKeyAlwaysScreenOnMainCamera])
                     {
@@ -1323,6 +1338,18 @@ namespace CM3D2.SubScreen.Plugin
             ssParam.fValue[PKeySubCamera][PPropSubCameraPosX] = preset.dParams[PKeySubCamera].dValues[PPropSubCameraPosX];
             ssParam.fValue[PKeySubCamera][PPropSubCameraPosY] = preset.dParams[PKeySubCamera].dValues[PPropSubCameraPosY];
             ssParam.fValue[PKeySubCamera][PPropSubCameraWidth] = preset.dParams[PKeySubCamera].dValues[PPropSubCameraWidth];
+            try{
+                ssParam.fValue[PKeySubCamera][PPropSubCameraLocX] = preset.dParams[PKeySubCamera].dValues[PPropSubCameraLocX];
+                ssParam.fValue[PKeySubCamera][PPropSubCameraLocY] = preset.dParams[PKeySubCamera].dValues[PPropSubCameraLocY];
+                ssParam.fValue[PKeySubCamera][PPropSubCameraLocZ] = preset.dParams[PKeySubCamera].dValues[PPropSubCameraLocZ];
+                ssParam.fValue[PKeySubCamera][PPropSubCameraAngX] = preset.dParams[PKeySubCamera].dValues[PPropSubCameraAngX];
+                ssParam.fValue[PKeySubCamera][PPropSubCameraAngY] = preset.dParams[PKeySubCamera].dValues[PPropSubCameraAngY];
+                ssParam.fValue[PKeySubCamera][PPropSubCameraAngZ] = preset.dParams[PKeySubCamera].dValues[PPropSubCameraAngZ];
+            }
+            catch(KeyNotFoundException e){
+                DebugLog("nyaaa");
+            }
+
 
             ssParam.bEnabled[PKeyMainLight] = preset.dParams[PKeyMainLight].enabled;
             ssParam.fValue[PKeyMainLight][PPropMainLightLuminance] = preset.dParams[PKeyMainLight].dValues[PPropMainLightLuminance];
@@ -1627,6 +1654,30 @@ namespace CM3D2.SubScreen.Plugin
                         new XElement("value",
                             new XAttribute("prop_Name", PPropSubCameraWidth),
                             new XAttribute("value", ssParam.fValue[PKeySubCamera][PPropSubCameraWidth])
+                            ),
+                        new XElement("value",
+                            new XAttribute("prop_Name", PPropSubCameraLocX),
+                            new XAttribute("value", ssParam.fValue[PKeySubCamera][PPropSubCameraLocX])
+                            ),
+                        new XElement("value",
+                            new XAttribute("prop_Name", PPropSubCameraLocY),
+                            new XAttribute("value", ssParam.fValue[PKeySubCamera][PPropSubCameraLocY])
+                            ),
+                        new XElement("value",
+                            new XAttribute("prop_Name", PPropSubCameraLocZ),
+                            new XAttribute("value", ssParam.fValue[PKeySubCamera][PPropSubCameraLocZ])
+                            ),
+                        new XElement("value",
+                            new XAttribute("prop_Name", PPropSubCameraAngX),
+                            new XAttribute("value", ssParam.fValue[PKeySubCamera][PPropSubCameraAngX])
+                            ),
+                        new XElement("value",
+                            new XAttribute("prop_Name", PPropSubCameraAngY),
+                            new XAttribute("value", ssParam.fValue[PKeySubCamera][PPropSubCameraAngY])
+                            ),
+                        new XElement("value",
+                            new XAttribute("prop_Name", PPropSubCameraAngZ),
+                            new XAttribute("value", ssParam.fValue[PKeySubCamera][PPropSubCameraAngZ])
                             )
                         ),
                     new XElement("param",

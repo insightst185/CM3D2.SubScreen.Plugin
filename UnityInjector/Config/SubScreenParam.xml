@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <mods format="1.0" name="SubScreenParam.xml"
       description="CM3D2.SubScreen.Plugin のパラメータ定義用XML" toggleKey="Pause" autoPreset="false">
 
@@ -26,6 +26,12 @@
         <value prop_name="SUB_CAMERA.xMin" min="0" max="1" label="X" type="num" default="0" />
         <value prop_name="SUB_CAMERA.yMin" min="0" max="1" label="Y" type="num" default="0" />
         <value prop_name="SUB_CAMERA.width" min="0" max="1" label="サイズ" type="num" default="1" />
+        <value prop_name="SUB_CAMERA.LocX" min="-20" max="20" label="位置X" type="num" default="0" />
+        <value prop_name="SUB_CAMERA.LocY" min="-20" max="20" label="位置Y" type="num" default="1.15" />
+        <value prop_name="SUB_CAMERA.LocZ" min="-20" max="20" label="位置Z" type="num" default="0.7" />
+        <value prop_name="SUB_CAMERA.AngX" min="-180" max="180" label="回転X" type="num" default="0" />
+        <value prop_name="SUB_CAMERA.AngY" min="-180" max="180" label="回転Y" type="num" default="180" />
+        <value prop_name="SUB_CAMERA.AngZ" min="-180" max="180" label="回転Z" type="num" default="0" />
     </mod>
     <mod id="MAIN_LIGHT" description ="メインライト設定" type="toggle">
         <value prop_name="MAIN_LIGHT.l" min="0" max="2.0" label="明るさ" type="num" default="1" />
