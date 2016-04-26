@@ -18,7 +18,7 @@ namespace CM3D2.SubScreen.Plugin
     PluginVersion("0.3.9.7")]
     public class SubScreen : PluginBase
     {
-        public const string Version = "0.3.9.9";
+        public const string Version = "0.3.9.10";
 
         public readonly string WinFileName = Directory.GetCurrentDirectory() + @"\UnityInjector\Config\SubScreen.png";
 
@@ -87,6 +87,14 @@ namespace CM3D2.SubScreen.Plugin
         const string PPropScreenFilterBlue = "SCREEN_FILTER.b";
         const string PPropScreenFilterAlpha = "SCREEN_FILTER.a";
 
+        const string PEyeMove = "EYE_MOVE";
+        const string PPropEyeMoveL = "EYE_MOVE.l";
+        const string PPropEyeMoveM = "EYE_MOVE.m";
+        const string PPropEyeMoveN = "EYE_MOVE.n";
+        const string PPropEyeMoveR = "EYE_MOVE.r";
+        const string PPropEyeMoveS = "EYE_MOVE.s";
+        const string PPropEyeMoveT = "EYE_MOVE.t";
+
         const string PKeyBSPos = "BS_POS";
         const string PPropBSPosX = "BS_POS.x";
         const string PPropBSPosY = "BS_POS.y";
@@ -129,7 +137,10 @@ namespace CM3D2.SubScreen.Plugin
             SceneDance_SCLP = 22,
 
             // ダンス:stellar my tears
-            SceneDance_STMT = 26
+            SceneDance_STMT = 26,
+
+            // ダンス:
+            SceneDance_RYFU = 28
         }
         private enum MenuType
         {
@@ -206,6 +217,7 @@ namespace CM3D2.SubScreen.Plugin
             public string XmlFormat;
             public KeyCode toggleKey = KeyCode.Pause;
             public bool autoPreset = false;
+            public bool sub_position = false;
             public List<string> sKey = new List<string>();
 
             public Dictionary<string, bool> bEnabled = new Dictionary<string, bool>();
@@ -299,7 +311,11 @@ namespace CM3D2.SubScreen.Plugin
                     autoPreset = true;
                     DebugLog("autoPreset", "enabled");
                 }
-
+                ap = ((XmlElement)mods).GetAttribute("sub_position");
+                if (ap != null && ap.ToLower().Equals("new"))
+                {
+                    sub_position = true;
+                }
                 DebugLog("toggleKey", Enum.GetName(typeof(KeyCode), toggleKey));
                 XmlNodeList modNodeS = mods.SelectNodes("/mods/mod");
                 if (!(modNodeS.Count > 0))
@@ -610,7 +626,11 @@ namespace CM3D2.SubScreen.Plugin
                     InputCheck();
                     showSubCamera();
                     applyScreen();
+                   
                 }
+                if(maid != null){
+	                eyeMove();
+	            }
             }
 
         }
@@ -1395,7 +1415,8 @@ namespace CM3D2.SubScreen.Plugin
             ssParam.fValue[PKeyScreenFilter][PPropScreenFilterAlpha] = preset.dParams[PKeyScreenFilter].dValues[PPropScreenFilterAlpha];
 
             // 美しくないが、いい案思いつかなかった。ちかたないね
-            if(goSubCam != null){
+            // sub_positionにnewを指定した場合は、サブカメラのスライダー位置を反映
+            if(goSubCam != null && ssParam.sub_position){
                 goSubCam.transform.position = new Vector3(ssParam.fValue[PKeySubCamera][PPropSubCameraLocX],
                                                           ssParam.fValue[PKeySubCamera][PPropSubCameraLocY],
                                                           ssParam.fValue[PKeySubCamera][PPropSubCameraLocZ]);
@@ -1857,7 +1878,7 @@ namespace CM3D2.SubScreen.Plugin
             }
             xdoc.Save(presetXmlFileName);
         }
-
+        
         private void SaveScenePreset(string presetName)
         {
             RemoveScenePreset();
@@ -1979,7 +2000,7 @@ namespace CM3D2.SubScreen.Plugin
         {
             Debug.Log(DebugLogHeader + key + ":" + message);
         }
-
+        
         class SSPreset
         {
             public string name;
@@ -1993,6 +2014,19 @@ namespace CM3D2.SubScreen.Plugin
             public bool enabled = false;
 
             public Dictionary<string, float> dValues;
+        }
+        
+        private void eyeMove(){
+	        	if(ssParam.bEnabled[PEyeMove]){
+                Vector3 vl = maid.body0.trsEyeL.localPosition;
+                Vector3 vr = maid.body0.trsEyeR.localPosition;
+                maid.body0.trsEyeL.localPosition = new Vector3((ssParam.fValue[PEyeMove][PPropEyeMoveN] -2.0f)/100f, ssParam.fValue[PEyeMove][PPropEyeMoveL]/100f, -1.0f*ssParam.fValue[PEyeMove][PPropEyeMoveM]/100f);
+                maid.body0.trsEyeR.localPosition = new Vector3((ssParam.fValue[PEyeMove][PPropEyeMoveT] -2.0f)/100f, -1.0f*ssParam.fValue[PEyeMove][PPropEyeMoveR]/100f, ssParam.fValue[PEyeMove][PPropEyeMoveS]/100f);
+//                Vector3 vl = maid.body0.trsEyeL.localEulerAngles;
+//                Vector3 vr = maid.body0.trsEyeR.localEulerAngles;
+//                maid.body0.trsEyeL.localEulerAngles = new Vector3(ssParam.fValue[PEyeMove][PPropEyeMoveM], ssParam.fValue[PEyeMove][PPropEyeMoveL], vl.z);
+//                maid.body0.trsEyeR.localEulerAngles = new Vector3(ssParam.fValue[PEyeMove][PPropEyeMoveS], ssParam.fValue[PEyeMove][PPropEyeMoveR], vl.z);
+        	}
         }
     }
 }

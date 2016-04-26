@@ -10,7 +10,7 @@ Download ZIPボタンを押してzipファイルをダウンロードします�
 zipファイルの中にあるUnityInjectorフォルダを、CM3D2フォルダにコピーしてください。
 
 <span style="color:red;font-weight:bold;">注意</span>  
-0.3.9.8で機能追加した関係で、SubScreenParam.xmlに要素・属性が追加されています。  
+0.3.9.10で機能追加した関係で、SubScreenParam.xmlに要素・属性が追加されています。  
 以前のバージョンを利用されている方は、SubScreenParam.xmlを新しいものに入れ替えて利用ください
 SubScreenPreset.xmlはそのまま利用できますにゃあ
 
@@ -143,6 +143,12 @@ Pauseキーでメニューが開きます。
 
 
 ##更新履歴
+####0.3.9.10
+* rhythmix to youに対応
+* 0.3.9.9の修正をもとにもどしてサブカメラの位置を引き多雨がないように修正
+* サブカメラの位置を引き継ぎたい場合は、SubScreenParam.xmlのsub_positionに"new"を指定してください
+* サブスクリーンの機能とは全く関係ない目線移動の実験機能を追加
+
 ####0.3.9.9
 * 0.3.9.8で追加した要素がプリセ入力時に反映されるように修正
 

@@ -1,6 +1,6 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <mods format="1.0" name="SubScreenParam.xml"
-      description="CM3D2.SubScreen.Plugin のパラメータ定義用XML" toggleKey="Pause" autoPreset="false">
+      description="CM3D2.SubScreen.Plugin のパラメータ定義用XML" toggleKey="Pause" autoPreset="false" sub_position="old">
 
     <mod id="ENABLE" description ="有効" type="check" />
     <mod id="ALWAYS_LOOK_AT_MAID" description ="サブカメラを常にメイドに向ける" type="check" />
@@ -27,7 +27,7 @@
         <value prop_name="SUB_CAMERA.yMin" min="0" max="1" label="Y" type="num" default="0" />
         <value prop_name="SUB_CAMERA.width" min="0" max="1" label="サイズ" type="num" default="1" />
         <value prop_name="SUB_CAMERA.LocX" min="-20" max="20" label="位置X" type="num" default="0" />
-        <value prop_name="SUB_CAMERA.LocY" min="-20" max="20" label="位置Y" type="num" default="1.15" />
+        <value prop_name="SUB_CAMERA.LocY" min="-100" max="20" label="位置Y" type="num" default="1.15" />
         <value prop_name="SUB_CAMERA.LocZ" min="-20" max="20" label="位置Z" type="num" default="0.7" />
         <value prop_name="SUB_CAMERA.AngX" min="-180" max="180" label="回転X" type="num" default="0" />
         <value prop_name="SUB_CAMERA.AngY" min="-180" max="180" label="回転Y" type="num" default="180" />
@@ -59,7 +59,7 @@
         <value prop_name="BS_POS.z" min="-20" max="20" label="Z" type="num" />
     </mod>
     <mod id="BS_SIZE" description ="スクリーンの倍率" >
-        <value prop_name="BS_SIZE" min="0" max="5" label="倍率" type="num" default="2" />
+        <value prop_name="BS_SIZE" min="0" max="10" label="倍率" type="num" default="2" />
     </mod>
     <mod id="BS_ANGLE" description ="スクリーンの向き" >
         <value prop_name="BS_ANGLE.x" min="-180" max="180" label="X軸" type="int" />
@@ -80,5 +80,13 @@
         <value prop_name="SCREEN_FILTER.g" min="0.0" max="2.0" default="1.0" label="緑" type="num" />
         <value prop_name="SCREEN_FILTER.b" min="0.0" max="2.0" default="1.0" label="青" type="num" />
         <value prop_name="SCREEN_FILTER.a" min="0.0" max="1.0" default="1" label="アルファ" type="num" />
+    </mod>
+    <mod id="EYE_MOVE" description ="目線移動実験" type="toggle">
+        <value prop_name="EYE_MOVE.l" min="-2.0" max="2.0" default="0.0" label="左目上下" type="num" />
+        <value prop_name="EYE_MOVE.m" min="-2.0" max="2.0" default="0.0" label="左目左右" type="num" />
+        <value prop_name="EYE_MOVE.n" min="-2.0" max="2.0" default="0.0" label="左目前後" type="num" />
+        <value prop_name="EYE_MOVE.r" min="-2.0" max="2.0" default="0.0" label="右目上下" type="num" />
+        <value prop_name="EYE_MOVE.s" min="-2.0" max="2.0" default="0.0" label="右目左右" type="num" />
+        <value prop_name="EYE_MOVE.t" min="-2.0" max="2.0" default="0.0" label="右目前後" type="num" />
     </mod>
 </mods>
