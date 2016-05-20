@@ -577,7 +577,7 @@ namespace CM3D2.SubScreen.Plugin
 
         private void Update()
         {
-            if (!Enum.IsDefined(typeof(TargetLevel), Application.loadedLevel))
+            if (!Enum.IsDefined(typeof(TargetLevel), UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex))
             {
                 if (menuType == MenuType.Main)
                 {
@@ -592,7 +592,7 @@ namespace CM3D2.SubScreen.Plugin
                 currentBg = GameMain.Instance.BgMgr.GetBGName();
                 if (ssParam.autoPreset)
                 {
-                    string key = generateSceneKey(Application.loadedLevel.ToString(), currentBg, currentYotogiName);
+                    string key = generateSceneKey(UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex.ToString(), currentBg, currentYotogiName);
                     if (scenePresets.ContainsKey(key) && presets.ContainsKey(scenePresets[key]))
                     {
                         SetPreset(presets[scenePresets[key]]);
@@ -600,8 +600,8 @@ namespace CM3D2.SubScreen.Plugin
                     }
                 }
             }
-            if (ssParam.autoPreset && ((!isChubLip && Application.loadedLevel == (int)TargetLevel.SceneYotogi)
-                || (isChubLip && Application.loadedLevel == (int)TargetLevelCbl.SceneYotogiWithChubLip)))
+            if (ssParam.autoPreset && ((!isChubLip && UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex == (int)TargetLevel.SceneYotogi)
+                || (isChubLip && UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex == (int)TargetLevelCbl.SceneYotogiWithChubLip)))
             {
                 foreach (YotogiManager.PlayingSkillData skillData in yotogiManager.play_skill_array.Reverse())
                 {
@@ -612,7 +612,7 @@ namespace CM3D2.SubScreen.Plugin
                         {
                             DebugLog("Yotogi changed", currentYotogiName + " >> " + yotogiName);
                             currentYotogiName = yotogiName;
-                            string key = generateSceneKey(Application.loadedLevel.ToString(), currentBg, currentYotogiName);
+                            string key = generateSceneKey(UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex.ToString(), currentBg, currentYotogiName);
                             if (scenePresets.ContainsKey(key) && presets.ContainsKey(scenePresets[key]))
                             {
                                 SetPreset(presets[scenePresets[key]]);
@@ -958,12 +958,12 @@ namespace CM3D2.SubScreen.Plugin
         {
             if (ssParam.bEnabled[PKeySubCamera])
             {
-                goSubCam.camera.rect = new Rect(ssParam.fValue[PKeySubCamera][PPropSubCameraPosX], ssParam.fValue[PKeySubCamera][PPropSubCameraPosY],
+                goSubCam.GetComponent<Camera>().rect = new Rect(ssParam.fValue[PKeySubCamera][PPropSubCameraPosX], ssParam.fValue[PKeySubCamera][PPropSubCameraPosY],
                     ssParam.fValue[PKeySubCamera][PPropSubCameraWidth], ssParam.fValue[PKeySubCamera][PPropSubCameraWidth]);
             }
             else
             {
-                goSubCam.camera.rect = new Rect(0, 0, 1f, 1f);
+                goSubCam.GetComponent<Camera>().rect = new Rect(0, 0, 1f, 1f);
             }
 
             if (!ssParam.bEnabled[PKeyAlwaysScreenOnMainCamera])
@@ -1045,7 +1045,7 @@ namespace CM3D2.SubScreen.Plugin
 
         public void OnGUI()
         {
-            if (!Enum.IsDefined(typeof(TargetLevel), Application.loadedLevel))
+            if (!Enum.IsDefined(typeof(TargetLevel), UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex))
             {
                 return;
             }
@@ -1922,7 +1922,7 @@ namespace CM3D2.SubScreen.Plugin
             var xdoc = XDocument.Load(presetXmlFileName);
 
             var scenePreset = new XElement("scenePreset",
-                new XAttribute("level", Application.loadedLevel),
+                new XAttribute("level", UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex),
                 new XAttribute("bgName", currentBg),
                 new XAttribute("yotogiName", currentYotogiName),
                 presetName);
@@ -1945,7 +1945,7 @@ namespace CM3D2.SubScreen.Plugin
             var xdoc = XDocument.Load(presetXmlFileName);
             IEnumerable<XElement> removeTarget =
                 from el in xdoc.Descendants("scenePreset")
-                where (string)el.Attribute("level") == Application.loadedLevel.ToString()
+                where (string)el.Attribute("level") == UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex.ToString()
                   && (string)el.Attribute("bgName") == currentBg
                   && (string)el.Attribute("yotogiName") == currentYotogiName
                 select el;
