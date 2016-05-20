@@ -14,11 +14,16 @@ namespace CM3D2.SubScreen.Plugin
     [PluginFilter("CM3D2x64"),
     PluginFilter("CM3D2x86"),
     PluginFilter("CM3D2VRx64"),
+    PluginFilter("CM3D2OHx64"),
+    PluginFilter("CM3D2OHx86"),
+    PluginFilter("CM3D2OHVRx64"),
     PluginName("CM3D2 OffScreen"),
-    PluginVersion("0.3.9.7")]
+    PluginVersion("0.3.9.11")]
     public class SubScreen : PluginBase
     {
-        public const string Version = "0.3.9.10";
+        public const string Version = "0.3.9.11";
+
+        private bool isChubLip = false;
 
         public readonly string WinFileName = Directory.GetCurrentDirectory() + @"\UnityInjector\Config\SubScreen.png";
 
@@ -118,7 +123,7 @@ namespace CM3D2.SubScreen.Plugin
 
         private enum TargetLevel
         {
-            //ダンス:ドキドキ☆Fallin' Love
+            //ダンス1:ドキドキ☆Fallin' Love
             SceneDance_DDFL = 4,
 
             // エディット
@@ -130,17 +135,44 @@ namespace CM3D2.SubScreen.Plugin
             // ADVパート
             SceneADV = 15,
 
-            // ダンス:entrance to you
+            // ダンス2:entrance to you
             SceneDance_ETYL = 20,
 
-            // ダンス:scarlet leap
+            // ダンス3:scarlet leap
             SceneDance_SCLP = 22,
 
-            // ダンス:stellar my tears
+            // ダンス4:stellar my tears
             SceneDance_STMT = 26,
 
-            // ダンス:
+            // ダンス5:rhythmix to you
             SceneDance_RYFU = 28
+        }
+
+        private enum TargetLevelCbl
+        {
+            //ダンス1:ドキドキ☆Fallin' Love
+            SceneDance_DDFL_Release = 3,
+
+            // エディット
+            SceneEdit = 4,
+
+            // 夜伽
+            SceneYotogiWithChubLip = 10,
+
+            // ADVパート
+            SceneADV = 11,
+
+            // ダンス2:entrance to you
+            SceneDance_ETYL_Release = 16,
+
+            // ダンス3:scarlet leap
+            SceneDance_SCL_Release = 18,
+
+            // ダンス4:stellar my tears
+            SceneDance_SMT_Release = 20,
+
+            // ダンス5:rhythmix to you
+            SceneDance_RTY_Release = 22
         }
         private enum MenuType
         {
@@ -504,6 +536,9 @@ namespace CM3D2.SubScreen.Plugin
 
         private void Awake()
         {
+            string dataPath = Application.dataPath;
+            isChubLip = dataPath.Contains("CM3D2OH");
+
             ssParam = new SubScreenParam();
             pv = new PixelValues();
             lastScreenSize = new Vector2(Screen.width, Screen.height);
@@ -523,7 +558,7 @@ namespace CM3D2.SubScreen.Plugin
             xmlLoaded = ssParam.Init();
             winRect = pv.PropScreenMH(1f - guiWidth, 0f, guiWidth, 1f);
             createScreen();
-            if (level == (int)TargetLevel.SceneYotogi)
+            if ((!isChubLip && level == (int)TargetLevel.SceneYotogi) || (isChubLip && level == (int)TargetLevelCbl.SceneYotogiWithChubLip))
             {
                 yotogiManager = GameObject.Find("YotogiManager").GetComponent<YotogiManager>();
             }
@@ -565,7 +600,8 @@ namespace CM3D2.SubScreen.Plugin
                     }
                 }
             }
-            if (ssParam.autoPreset && Application.loadedLevel == (int)TargetLevel.SceneYotogi)
+            if (ssParam.autoPreset && ((!isChubLip && Application.loadedLevel == (int)TargetLevel.SceneYotogi)
+                || (isChubLip && Application.loadedLevel == (int)TargetLevelCbl.SceneYotogiWithChubLip)))
             {
                 foreach (YotogiManager.PlayingSkillData skillData in yotogiManager.play_skill_array.Reverse())
                 {
