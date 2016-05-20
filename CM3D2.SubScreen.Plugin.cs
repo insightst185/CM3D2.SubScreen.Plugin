@@ -29,7 +29,7 @@ namespace CM3D2.SubScreen.Plugin
 
         private string presetXmlFileName = Application.dataPath + "/../UnityInjector/Config/SubScreenPreset.xml";
 
-        const int SubScreenLayer = 11;
+        const int SubScreenLayer = 1;
 
         const string PKeyEnable = "ENABLE";
         const string PKeyLookAtMaid = "LOOK_AT_MAID";
