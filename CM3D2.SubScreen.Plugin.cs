@@ -14,17 +14,22 @@ namespace CM3D2.SubScreen.Plugin
     [PluginFilter("CM3D2x64"),
     PluginFilter("CM3D2x86"),
     PluginFilter("CM3D2VRx64"),
+    PluginFilter("CM3D2OHx64"),
+    PluginFilter("CM3D2OHx86"),
+    PluginFilter("CM3D2OHVRx64"),
     PluginName("CM3D2 OffScreen"),
-    PluginVersion("0.3.9.7")]
+    PluginVersion("0.3.9.11")]
     public class SubScreen : PluginBase
     {
-        public const string Version = "0.3.9.10";
+        public const string Version = "0.3.9.11";
+
+        private bool isChubLip = false;
 
         public readonly string WinFileName = Directory.GetCurrentDirectory() + @"\UnityInjector\Config\SubScreen.png";
 
         private string presetXmlFileName = Application.dataPath + "/../UnityInjector/Config/SubScreenPreset.xml";
 
-        const int SubScreenLayer = 11;
+        const int SubScreenLayer = 1;
 
         const string PKeyEnable = "ENABLE";
         const string PKeyLookAtMaid = "LOOK_AT_MAID";
@@ -118,7 +123,7 @@ namespace CM3D2.SubScreen.Plugin
 
         private enum TargetLevel
         {
-            //ダンス:ドキドキ☆Fallin' Love
+            //ダンス1:ドキドキ☆Fallin' Love
             SceneDance_DDFL = 4,
 
             // エディット
@@ -130,17 +135,44 @@ namespace CM3D2.SubScreen.Plugin
             // ADVパート
             SceneADV = 15,
 
-            // ダンス:entrance to you
+            // ダンス2:entrance to you
             SceneDance_ETYL = 20,
 
-            // ダンス:scarlet leap
+            // ダンス3:scarlet leap
             SceneDance_SCLP = 22,
 
-            // ダンス:stellar my tears
+            // ダンス4:stellar my tears
             SceneDance_STMT = 26,
 
-            // ダンス:
+            // ダンス5:rhythmix to you
             SceneDance_RYFU = 28
+        }
+
+        private enum TargetLevelCbl
+        {
+            //ダンス1:ドキドキ☆Fallin' Love
+            SceneDance_DDFL_Release = 3,
+
+            // エディット
+            SceneEdit = 4,
+
+            // 夜伽
+            SceneYotogiWithChubLip = 10,
+
+            // ADVパート
+            SceneADV = 11,
+
+            // ダンス2:entrance to you
+            SceneDance_ETYL_Release = 16,
+
+            // ダンス3:scarlet leap
+            SceneDance_SCL_Release = 18,
+
+            // ダンス4:stellar my tears
+            SceneDance_SMT_Release = 20,
+
+            // ダンス5:rhythmix to you
+            SceneDance_RTY_Release = 22
         }
         private enum MenuType
         {
@@ -504,6 +536,9 @@ namespace CM3D2.SubScreen.Plugin
 
         private void Awake()
         {
+            string dataPath = Application.dataPath;
+            isChubLip = dataPath.Contains("CM3D2OH");
+
             ssParam = new SubScreenParam();
             pv = new PixelValues();
             lastScreenSize = new Vector2(Screen.width, Screen.height);
@@ -512,7 +547,7 @@ namespace CM3D2.SubScreen.Plugin
 
         private void OnLevelWasLoaded(int level)
         {
-            if (!Enum.IsDefined(typeof(TargetLevel), level))
+            if ((!isChubLip && !Enum.IsDefined(typeof(TargetLevel), level)) || (isChubLip && !Enum.IsDefined(typeof(TargetLevelCbl), level)) )
             {
                 return;
             }
@@ -523,7 +558,7 @@ namespace CM3D2.SubScreen.Plugin
             xmlLoaded = ssParam.Init();
             winRect = pv.PropScreenMH(1f - guiWidth, 0f, guiWidth, 1f);
             createScreen();
-            if (level == (int)TargetLevel.SceneYotogi)
+            if ((!isChubLip && level == (int)TargetLevel.SceneYotogi) || (isChubLip && level == (int)TargetLevelCbl.SceneYotogiWithChubLip))
             {
                 yotogiManager = GameObject.Find("YotogiManager").GetComponent<YotogiManager>();
             }
@@ -542,7 +577,8 @@ namespace CM3D2.SubScreen.Plugin
 
         private void Update()
         {
-            if (!Enum.IsDefined(typeof(TargetLevel), Application.loadedLevel))
+            if ((!isChubLip && !Enum.IsDefined(typeof(TargetLevel), Application.loadedLevel))
+              || (isChubLip && !Enum.IsDefined(typeof(TargetLevelCbl), Application.loadedLevel)))
             {
                 if (menuType == MenuType.Main)
                 {
@@ -565,7 +601,8 @@ namespace CM3D2.SubScreen.Plugin
                     }
                 }
             }
-            if (ssParam.autoPreset && Application.loadedLevel == (int)TargetLevel.SceneYotogi)
+            if (ssParam.autoPreset && ((!isChubLip && Application.loadedLevel == (int)TargetLevel.SceneYotogi)
+                                     || (isChubLip && Application.loadedLevel == (int)TargetLevelCbl.SceneYotogiWithChubLip)))
             {
                 foreach (YotogiManager.PlayingSkillData skillData in yotogiManager.play_skill_array.Reverse())
                 {
@@ -642,20 +679,20 @@ namespace CM3D2.SubScreen.Plugin
 
                 if (ssParam.bEnabled[PKeyEnable])
                 {
-                    goSubCam.renderer.enabled = true;
-                    goSubCam.camera.enabled = true;
+                    SetRendererEnabled(goSubCam, true);
+                    goSubCam.GetComponent<Camera>().enabled = true;
                     if (ssParam.bEnabled[PKeySubCamera])
                     {
-                        goSubCam.camera.targetTexture = null;
-                        goSubScreen.renderer.enabled = false;
-                        goSsLight.light.enabled = false;
-                        goSsFrontFilter.renderer.enabled = false;
+                        goSubCam.GetComponent<Camera>().targetTexture = null;
+                        SetRendererEnabled(goSubScreen, false);
+                        goSsLight.GetComponent<Light>().enabled = false;
+                        SetRendererEnabled(goSsFrontFilter, false);
                     }
                     else
                     {
-                        goSubCam.camera.targetTexture = rTex;
-                        goSubScreen.renderer.enabled = true;
-                        goSsLight.light.enabled = true;
+                        goSubCam.GetComponent<Camera>().targetTexture = rTex;
+                        SetRendererEnabled(goSubScreen, true);
+                        goSsLight.GetComponent<Light>().enabled = true;
                     }
                     if (ssParam.bEnabled[PKeyAlwaysLookAtFace])
                     {
@@ -700,10 +737,10 @@ namespace CM3D2.SubScreen.Plugin
                 }
                 else
                 {
-                    goSubCam.renderer.enabled = false;
-                    goSubCam.camera.enabled = false;
-                    goSubScreen.renderer.enabled = false;
-                    goSsFrontFilter.renderer.enabled = false;
+                    SetRendererEnabled(goSubCam, false);
+                    goSubCam.GetComponent<Camera>().enabled = false;
+                    SetRendererEnabled(goSubScreen, false);
+                    SetRendererEnabled(goSsFrontFilter, false);
                 }
             }
         }
@@ -717,7 +754,7 @@ namespace CM3D2.SubScreen.Plugin
             }
             if (Input.GetKey(KeyCode.W))
             {
-                if (goSubCam.renderer.enabled)
+                if (goSubCam.GetComponent<Renderer>().enabled)
                 {
                     if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
                     {
@@ -735,7 +772,7 @@ namespace CM3D2.SubScreen.Plugin
             }
             else if (Input.GetKey(KeyCode.S))
             {
-                if (goSubCam.renderer.enabled)
+                if (goSubCam.GetComponent<Renderer>().enabled)
                 {
                     if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
                     {
@@ -753,7 +790,7 @@ namespace CM3D2.SubScreen.Plugin
             }
             else if (Input.GetKey(KeyCode.A))
             {
-                if (goSubCam.renderer.enabled)
+                if (goSubCam.GetComponent<Renderer>().enabled)
                 {
                     if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
                     {
@@ -771,7 +808,7 @@ namespace CM3D2.SubScreen.Plugin
             }
             else if (Input.GetKey(KeyCode.D))
             {
-                if (goSubCam.renderer.enabled)
+                if (goSubCam.GetComponent<Renderer>().enabled)
                 {
                     if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
                     {
@@ -789,7 +826,7 @@ namespace CM3D2.SubScreen.Plugin
             }
             else if (Input.GetKey(KeyCode.Q))
             {
-                if (goSubCam.renderer.enabled)
+                if (goSubCam.GetComponent<Renderer>().enabled)
                 {
                     if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
                     {
@@ -803,7 +840,7 @@ namespace CM3D2.SubScreen.Plugin
             }
             else if (Input.GetKey(KeyCode.E))
             {
-                if (goSubCam.renderer.enabled)
+                if (goSubCam.GetComponent<Renderer>().enabled)
                 {
                     if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
                     {
@@ -823,28 +860,28 @@ namespace CM3D2.SubScreen.Plugin
             goSubScreen = GameObject.CreatePrimitive(PrimitiveType.Cube);
             goSubScreen.layer = SubScreenLayer;
             goSsFrontFilter = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            goSsFrontFilter.renderer.enabled = false;
+            SetRendererEnabled(goSsFrontFilter, false);
             goSsFrontFilter.layer = SubScreenLayer;
             goSsFrontFilter.transform.SetParent(goSubScreen.transform);
             goSsFrontFilter.transform.localScale = new Vector3(1f, 1f, 0.001f);
             goSsFrontFilter.transform.localPosition += new Vector3(0, 0, 0.001f);
-            goSsFrontFilter.renderer.material.shader = Shader.Find("Transparent/Diffuse");
+            goSsFrontFilter.GetComponent<Renderer>().material.shader = Shader.Find("Transparent/Diffuse");
             goSubScreen.transform.localScale = new Vector3(1f, 1f, 0.01f);
             goSsLight = new GameObject();
             goSsLight.transform.localPosition += new Vector3(0, 0.5f, 0.5f);
             Light ssLight = goSsLight.AddComponent<Light>();
             ssLight.enabled = false;
-            ssLight.light.type = LightType.Directional;
-            ssLight.light.transform.LookAt(goSubScreen.transform);
-            ssLight.light.cullingMask &= ~(1 << LayerMask.NameToLayer("Default"));
-            ssLight.light.cullingMask &= ~(1 << LayerMask.NameToLayer("BackGround"));
-            ssLight.light.cullingMask &= ~(1 << LayerMask.NameToLayer("Charactor"));
+            ssLight.GetComponent<Light>().type = LightType.Directional;
+            ssLight.GetComponent<Light>().transform.LookAt(goSubScreen.transform);
+            ssLight.GetComponent<Light>().cullingMask &= ~(1 << LayerMask.NameToLayer("Default"));
+            ssLight.GetComponent<Light>().cullingMask &= ~(1 << LayerMask.NameToLayer("BackGround"));
+            ssLight.GetComponent<Light>().cullingMask &= ~(1 << LayerMask.NameToLayer("Charactor"));
             ssLight.intensity = 0.5f;
             goSsLight.transform.SetParent(goSubScreen.transform);
-            goSubScreen.renderer.enabled = false;
+            SetRendererEnabled(goSubScreen, false);
 
             goSubCam = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            goSubCam.renderer.enabled = false;
+            SetRendererEnabled(goSubCam, false);
             goSubCam.transform.localScale = new Vector3(0.03f, 0.03f, 0.03f);
             Camera cam = goSubCam.AddComponent<Camera>();
             cam.cullingMask &= ~(1 << SubScreenLayer);
@@ -854,10 +891,10 @@ namespace CM3D2.SubScreen.Plugin
             goSubLight = new GameObject("sub light");
             goSubLight.AddComponent<Light>();
             goSubLight.transform.SetParent(goSubCam.transform);
-            goSubLight.light.type = LightType.Spot;
-            goSubLight.light.range = 10;
-            goSubLight.light.enabled = false;
-            goSubLight.light.cullingMask &= ~(1 << SubScreenLayer);
+            goSubLight.GetComponent<Light>().type = LightType.Spot;
+            goSubLight.GetComponent<Light>().range = 10;
+            goSubLight.GetComponent<Light>().enabled = false;
+            goSubLight.GetComponent<Light>().cullingMask &= ~(1 << SubScreenLayer);
 
             rTex = new RenderTexture(
                 Screen.width / RenderTextureScale,
@@ -865,9 +902,9 @@ namespace CM3D2.SubScreen.Plugin
                 24);
             cam.targetTexture = rTex;
 
-            goSubScreen.renderer.material.mainTexture = rTex;
-            goSubCam.renderer.material.shader = Shader.Find("Transparent/Diffuse");
-            goSubScreen.renderer.material.shader = Shader.Find("Transparent/Diffuse");
+            goSubScreen.GetComponent<Renderer>().material.mainTexture = rTex;
+            goSubCam.GetComponent<Renderer>().material.shader = Shader.Find("Transparent/Diffuse");
+            goSubScreen.GetComponent<Renderer>().material.shader = Shader.Find("Transparent/Diffuse");
 
             Transform mainTransform = GameMain.Instance.MainCamera.transform;
             goSubCam.transform.position = mainTransform.position;
@@ -887,7 +924,7 @@ namespace CM3D2.SubScreen.Plugin
             DebugLog("SetLocalTexture:", filePath);
             WWW file = new WWW("file://" + filePath);
             yield return file;
-            gameObject.renderer.material.mainTexture = file.texture;
+            gameObject.GetComponent<Renderer>().material.mainTexture = file.texture;
         }
 
         public void onClickButton(String key)
@@ -895,7 +932,7 @@ namespace CM3D2.SubScreen.Plugin
             DebugLog("onClickButton", key);
             if (key.Equals(PKeyLookAtMaid))
             {
-                goSubCam.camera.transform.LookAt(maid.body0.trsHead.transform);
+                goSubCam.GetComponent<Camera>().transform.LookAt(maid.body0.trsHead.transform);
             }
             else if (key.Equals(PKeyResetCameraPos))
             {
@@ -922,12 +959,12 @@ namespace CM3D2.SubScreen.Plugin
         {
             if (ssParam.bEnabled[PKeySubCamera])
             {
-                goSubCam.camera.rect = new Rect(ssParam.fValue[PKeySubCamera][PPropSubCameraPosX], ssParam.fValue[PKeySubCamera][PPropSubCameraPosY],
+                goSubCam.GetComponent<Camera>().rect = new Rect(ssParam.fValue[PKeySubCamera][PPropSubCameraPosX], ssParam.fValue[PKeySubCamera][PPropSubCameraPosY],
                     ssParam.fValue[PKeySubCamera][PPropSubCameraWidth], ssParam.fValue[PKeySubCamera][PPropSubCameraWidth]);
             }
             else
             {
-                goSubCam.camera.rect = new Rect(0, 0, 1f, 1f);
+                goSubCam.GetComponent<Camera>().rect = new Rect(0, 0, 1f, 1f);
             }
 
             if (!ssParam.bEnabled[PKeyAlwaysScreenOnMainCamera])
@@ -943,33 +980,33 @@ namespace CM3D2.SubScreen.Plugin
             var x = ssParam.fValue[PKeyBSSize][PPropBSSize];
             var y = x * Screen.height / Screen.width;
             goSubScreen.transform.localScale = new Vector3(x, y, goSubScreen.transform.localScale.z);
-            Color color = goSubScreen.renderer.material.color;
+            Color color = goSubScreen.GetComponent<Renderer>().material.color;
             color.r = ssParam.fValue[PKeyBSColor][PPropBSColorRed] * ssParam.fValue[PKeyBSColor][PPropBSColorLuminance];
             color.g = ssParam.fValue[PKeyBSColor][PPropBSColorGreen] * ssParam.fValue[PKeyBSColor][PPropBSColorLuminance];
             color.b = ssParam.fValue[PKeyBSColor][PPropBSColorBlue] * ssParam.fValue[PKeyBSColor][PPropBSColorLuminance];
             color.a = ssParam.fValue[PKeyBSColor][PPropBSColorAlpha];
-            goSubScreen.renderer.material.color = color;
-            goSsLight.light.intensity = ssParam.fValue[PKeyBSColor][PPropScreenLightLuminance];
+            goSubScreen.GetComponent<Renderer>().material.color = color;
+            goSsLight.GetComponent<Light>().intensity = ssParam.fValue[PKeyBSColor][PPropScreenLightLuminance];
             if (ssParam.fValue[PKeyBSColor][PPropScreenLightLuminance] > 0)
             {
-                GameMain.Instance.MainLight.light.cullingMask &= ~(1 << SubScreenLayer);
+                GameMain.Instance.MainLight.GetComponent<Light>().cullingMask &= ~(1 << SubScreenLayer);
             }
             else
             {
-                GameMain.Instance.MainLight.light.cullingMask |= (1 << SubScreenLayer);
+                GameMain.Instance.MainLight.GetComponent<Light>().cullingMask |= (1 << SubScreenLayer);
             }
 
-            color = goSubCam.renderer.material.color;
+            color = goSubCam.GetComponent<Renderer>().material.color;
             color.r = ssParam.fValue[PKeyCameraColor][PPropCameraColorRed] * ssParam.fValue[PKeyBSColor][PPropBSColorLuminance];
             color.g = ssParam.fValue[PKeyCameraColor][PPropCameraColorGreen] * ssParam.fValue[PKeyBSColor][PPropBSColorLuminance];
             color.b = ssParam.fValue[PKeyCameraColor][PPropCameraColorBlue] * ssParam.fValue[PKeyBSColor][PPropBSColorLuminance];
             color.a = ssParam.fValue[PKeyCameraColor][PPropCameraColorAlpha];
-            goSubCam.renderer.material.color = color;
-            goSubCam.camera.fieldOfView = ssParam.fValue[PKeyCameraColor][PPropSubCameraFieldOfView];
+            goSubCam.GetComponent<Renderer>().material.color = color;
+            goSubCam.GetComponent<Camera>().fieldOfView = ssParam.fValue[PKeyCameraColor][PPropSubCameraFieldOfView];
 
             if (ssParam.bEnabled[PKeyMainLight])
             {
-                Light mainLight = GameMain.Instance.MainLight.light;
+                Light mainLight = GameMain.Instance.MainLight.GetComponent<Light>();
                 color = mainLight.color;
                 color.r = ssParam.fValue[PKeyMainLight][PPropMainLightColorRed] * ssParam.fValue[PKeyMainLight][PPropMainLightLuminance];
                 color.g = ssParam.fValue[PKeyMainLight][PPropMainLightColorGreen] * ssParam.fValue[PKeyMainLight][PPropMainLightLuminance];
@@ -979,37 +1016,37 @@ namespace CM3D2.SubScreen.Plugin
 
             if (ssParam.bEnabled[PKeyEnable] && ssParam.bEnabled[PKeySubLight])
             {
-                goSubLight.light.enabled = true;
-                goSubLight.light.spotAngle = ssParam.fValue[PKeySubLight][PPropSubLightRange];
-                color = goSubLight.light.color;
+                goSubLight.GetComponent<Light>().enabled = true;
+                goSubLight.GetComponent<Light>().spotAngle = ssParam.fValue[PKeySubLight][PPropSubLightRange];
+                color = goSubLight.GetComponent<Light>().color;
                 color.r = ssParam.fValue[PKeySubLight][PPropSubLightColorRed] * ssParam.fValue[PKeySubLight][PPropSubLightLuminance];
                 color.g = ssParam.fValue[PKeySubLight][PPropSubLightColorGreen] * ssParam.fValue[PKeySubLight][PPropSubLightLuminance];
                 color.b = ssParam.fValue[PKeySubLight][PPropSubLightColorBlue] * ssParam.fValue[PKeySubLight][PPropSubLightLuminance];
-                goSubLight.light.color = color;
+                goSubLight.GetComponent<Light>().color = color;
             }
             else
             {
-                goSubLight.light.enabled = false;
+                goSubLight.GetComponent<Light>().enabled = false;
             }
             if (ssParam.bEnabled[PKeyEnable] && ssParam.bEnabled[PKeyScreenFilter])
             {
-                goSsFrontFilter.renderer.enabled = true;
-                color = goSsFrontFilter.renderer.material.color;
+                SetRendererEnabled(goSsFrontFilter, true);
+                color = goSsFrontFilter.GetComponent<Renderer>().material.color;
                 color.r = ssParam.fValue[PKeyScreenFilter][PPropScreenFilterRed] * ssParam.fValue[PKeyScreenFilter][PPropScreenFilterLuminance];
                 color.g = ssParam.fValue[PKeyScreenFilter][PPropScreenFilterGreen] * ssParam.fValue[PKeyScreenFilter][PPropScreenFilterLuminance];
                 color.b = ssParam.fValue[PKeyScreenFilter][PPropScreenFilterBlue] * ssParam.fValue[PKeyScreenFilter][PPropScreenFilterLuminance];
                 color.a = ssParam.fValue[PKeyScreenFilter][PPropScreenFilterAlpha];
-                goSsFrontFilter.renderer.material.color = color;
+                goSsFrontFilter.GetComponent<Renderer>().material.color = color;
             }
             else
             {
-                goSsFrontFilter.renderer.enabled = false;
+                SetRendererEnabled(goSsFrontFilter, false);
             }
         }
 
         public void OnGUI()
         {
-            if (!Enum.IsDefined(typeof(TargetLevel), Application.loadedLevel))
+            if ((!isChubLip && !Enum.IsDefined(typeof(TargetLevel), Application.loadedLevel)) || (isChubLip && !Enum.IsDefined(typeof(TargetLevelCbl), Application.loadedLevel)))
             {
                 return;
             }
@@ -1977,6 +2014,16 @@ namespace CM3D2.SubScreen.Plugin
             return GUI.HorizontalSlider(outRect, value, min, max);
         }
 
+        private void SetRendererEnabled(GameObject obj, bool enabled)
+        {
+            Assert.IsNotNull(obj);
+            var renderer = obj.GetComponent<Renderer>();
+            if (renderer)
+            {
+                renderer.enabled = enabled;
+            }
+        }
+
         const string DebugLogHeader = "OffScreen:";
 
         public static void DebugLog(string message)
@@ -2028,5 +2075,18 @@ namespace CM3D2.SubScreen.Plugin
 //                maid.body0.trsEyeR.localEulerAngles = new Vector3(ssParam.fValue[PEyeMove][PPropEyeMoveS], ssParam.fValue[PEyeMove][PPropEyeMoveR], vl.z);
         	}
         }
+        
+         public static class Assert
+    {
+        [System.Diagnostics.Conditional("DEBUG")]
+        public static void IsNotNull(object obj)
+        {
+            if (obj == null)
+            {
+                string msg = "Assertion failed. Value is null.";
+                UnityEngine.Debug.LogError(msg);
+            }
+        }
+    }
     }
 }
