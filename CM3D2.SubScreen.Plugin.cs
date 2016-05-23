@@ -17,11 +17,11 @@ namespace CM3D2.SubScreen.Plugin
     PluginFilter("CM3D2OHx64"),
     PluginFilter("CM3D2OHx86"),
     PluginFilter("CM3D2OHVRx64"),
-    PluginName("CM3D2 OffScreen"),
-    PluginVersion("0.3.9.11")]
+    PluginName("CM3D2 SubScreen"),
+    PluginVersion("0.3.9.12")]
     public class SubScreen : PluginBase
     {
-        public const string Version = "0.3.9.11";
+        public const string Version = "0.3.9.12";
 
         private bool isChubLip = false;
 
@@ -2045,7 +2045,7 @@ namespace CM3D2.SubScreen.Plugin
             }
         }
 
-        const string DebugLogHeader = "OffScreen:";
+        const string DebugLogHeader = "SubScreen:";
 
         public static void DebugLog(string message)
         {
