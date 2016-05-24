@@ -17,11 +17,11 @@ namespace CM3D2.SubScreen.Plugin
     PluginFilter("CM3D2OHx64"),
     PluginFilter("CM3D2OHx86"),
     PluginFilter("CM3D2OHVRx64"),
-    PluginName("CM3D2 OffScreen"),
-    PluginVersion("0.3.9.11")]
+    PluginName("CM3D2 SubScreen"),
+    PluginVersion("0.3.9.12")]
     public class SubScreen : PluginBase
     {
-        public const string Version = "0.3.9.11";
+        public const string Version = "0.3.9.12";
 
         private bool isChubLip = false;
 
@@ -558,7 +558,7 @@ namespace CM3D2.SubScreen.Plugin
             xmlLoaded = ssParam.Init();
             winRect = pv.PropScreenMH(1f - guiWidth, 0f, guiWidth, 1f);
             createScreen();
-            if ((!isChubLip && level == (int)TargetLevel.SceneYotogi) || (isChubLip && level == (int)TargetLevelCbl.SceneYotogiWithChubLip))
+            if (!isChubLip && level == (int)TargetLevel.SceneYotogi)
             {
                 yotogiManager = GameObject.Find("YotogiManager").GetComponent<YotogiManager>();
             }
@@ -593,36 +593,16 @@ namespace CM3D2.SubScreen.Plugin
                 currentBg = GameMain.Instance.BgMgr.GetBGName();
                 if (ssParam.autoPreset)
                 {
-                    string key = generateSceneKey(Application.loadedLevel.ToString(), currentBg, currentYotogiName);
-                    if (scenePresets.ContainsKey(key) && presets.ContainsKey(scenePresets[key]))
-                    {
-                        SetPreset(presets[scenePresets[key]]);
-
-                    }
+                    this.setScenePreset();
                 }
             }
-            if (ssParam.autoPreset && ((!isChubLip && Application.loadedLevel == (int)TargetLevel.SceneYotogi)
-                                     || (isChubLip && Application.loadedLevel == (int)TargetLevelCbl.SceneYotogiWithChubLip)))
+            if (ssParam.autoPreset && !isChubLip && Application.loadedLevel == (int)TargetLevel.SceneYotogi)
             {
-                foreach (YotogiManager.PlayingSkillData skillData in yotogiManager.play_skill_array.Reverse())
-                {
-                    if (skillData.is_play)
-                    {
-                        var yotogiName = skillData.skill_pair.base_data.name;
-                        if (currentYotogiName == null || !yotogiName.Equals(currentYotogiName))
-                        {
-                            DebugLog("Yotogi changed", currentYotogiName + " >> " + yotogiName);
-                            currentYotogiName = yotogiName;
-                            string key = generateSceneKey(Application.loadedLevel.ToString(), currentBg, currentYotogiName);
-                            if (scenePresets.ContainsKey(key) && presets.ContainsKey(scenePresets[key]))
-                            {
-                                SetPreset(presets[scenePresets[key]]);
+                this.detectSkill();
 
-                            }
-                        }
-                        break;
-                    }
-                }
+            } else if (ssParam.autoPreset && isChubLip && Application.loadedLevel == (int)TargetLevelCbl.SceneYotogiWithChubLip){
+                // Chu-B Lipの場合
+                this.detectSkillCbl();
             }
             else
             {
@@ -670,6 +650,47 @@ namespace CM3D2.SubScreen.Plugin
 	            }
             }
 
+        }
+
+        private void detectSkill() {
+
+            foreach (YotogiManager.PlayingSkillData skillData in yotogiManager.play_skill_array.Reverse())
+            {
+                if (skillData.is_play)
+                {
+                    var yotogiName = skillData.skill_pair.base_data.name;
+                    if (currentYotogiName == null || !yotogiName.Equals(currentYotogiName))
+                    {
+                        DebugLog("Yotogi changed", currentYotogiName + " >> " + yotogiName);
+                        currentYotogiName = yotogiName;
+                        this.setScenePreset();
+                    }
+                    break;
+                }
+            }
+        }
+
+        private void detectSkillCbl() {
+
+            var skillData = YotogiPlayManagerWithChubLip.GetSelectSkillData();
+            if (skillData != null) {
+                var yotogiName = skillData.skill_name;
+                if (currentYotogiName == null || !yotogiName.Equals(currentYotogiName))
+                {
+                    DebugLog("Yotogi changed", currentYotogiName + " >> " + yotogiName);
+                    currentYotogiName = yotogiName;
+                    this.setScenePreset();
+                }
+            }
+        }
+
+        private void setScenePreset() {
+
+            string key = generateSceneKey(Application.loadedLevel.ToString(), currentBg, currentYotogiName);
+            if (scenePresets.ContainsKey(key) && presets.ContainsKey(scenePresets[key]))
+            {
+                SetPreset(presets[scenePresets[key]]);
+            }
         }
 
         private void showSubCamera()
@@ -2024,7 +2045,7 @@ namespace CM3D2.SubScreen.Plugin
             }
         }
 
-        const string DebugLogHeader = "OffScreen:";
+        const string DebugLogHeader = "SubScreen:";
 
         public static void DebugLog(string message)
         {
