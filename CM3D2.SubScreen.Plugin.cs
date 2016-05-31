@@ -1402,7 +1402,7 @@ namespace CM3D2.SubScreen.Plugin
             ssParam.fValue[PKeyAlwaysLookAtFace][PPropLookAtFaceLeft] = preset.dParams[PKeyAlwaysLookAtFace].dValues[PPropLookAtFaceLeft];
             ssParam.fValue[PKeyAlwaysLookAtFace][PPropLookAtFaceFront] = preset.dParams[PKeyAlwaysLookAtFace].dValues[PPropLookAtFaceFront];
 
-            ssParam.bEnabled[PKeyAlwaysLookAtXxx] = preset.dParams[PKeyAlwaysLookAtFace].enabled;
+			ssParam.bEnabled[PKeyAlwaysLookAtXxx] = preset.dParams[PKeyAlwaysLookAtXxx].enabled;
             ssParam.fValue[PKeyAlwaysLookAtXxx][PPropLookAtXxxUp] = preset.dParams[PKeyAlwaysLookAtXxx].dValues[PPropLookAtXxxUp];
             ssParam.fValue[PKeyAlwaysLookAtXxx][PPropLookAtXxxLeft] = preset.dParams[PKeyAlwaysLookAtXxx].dValues[PPropLookAtXxxLeft];
             ssParam.fValue[PKeyAlwaysLookAtXxx][PPropLookAtXxxFront] = preset.dParams[PKeyAlwaysLookAtXxx].dValues[PPropLookAtXxxFront];
