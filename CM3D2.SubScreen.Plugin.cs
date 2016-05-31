@@ -24,6 +24,7 @@ namespace CM3D2.SubScreen.Plugin
         public const string Version = "0.3.9.12";
 
         private bool isChubLip = false;
+		private bool isVR = false;
 
         public readonly string WinFileName = Directory.GetCurrentDirectory() + @"\UnityInjector\Config\SubScreen.png";
 
@@ -539,6 +540,8 @@ namespace CM3D2.SubScreen.Plugin
             string dataPath = Application.dataPath;
             isChubLip = dataPath.Contains("CM3D2OH");
 
+			isVR = dataPath.Contains("VRx64");
+
             ssParam = new SubScreenParam();
             pv = new PixelValues();
             lastScreenSize = new Vector2(Screen.width, Screen.height);
@@ -750,10 +753,14 @@ namespace CM3D2.SubScreen.Plugin
                     {
                         Transform tr = GameMain.Instance.MainCamera.transform;
                         goSubScreen.transform.position = tr.position;
-                        goSubScreen.transform.position += tr.TransformDirection(Vector3.forward) * ssParam.fValue[PKeyAlwaysScreenOnMainCamera][PPropAlwaysScreenOnMainCameraFront];
+						float offsetSubScreen = 1f;
+						if (isVR) {
+							offsetSubScreen = 3f;
+						}
+						goSubScreen.transform.position += tr.TransformDirection(Vector3.forward) * ssParam.fValue[PKeyAlwaysScreenOnMainCamera][PPropAlwaysScreenOnMainCameraFront] / offsetSubScreen;
                         goSubScreen.transform.LookAt(tr);
-                        goSubScreen.transform.position += goSubScreen.transform.TransformDirection(Vector3.up) * ssParam.fValue[PKeyAlwaysScreenOnMainCamera][PPropAlwaysScreenOnMainCameraUp];
-                        goSubScreen.transform.position += goSubScreen.transform.TransformDirection(Vector3.left) * ssParam.fValue[PKeyAlwaysScreenOnMainCamera][PPropAlwaysScreenOnMainCameraLeft];
+						goSubScreen.transform.position += goSubScreen.transform.TransformDirection(Vector3.up) * ssParam.fValue[PKeyAlwaysScreenOnMainCamera][PPropAlwaysScreenOnMainCameraUp] / offsetSubScreen;
+						goSubScreen.transform.position += goSubScreen.transform.TransformDirection(Vector3.left) * ssParam.fValue[PKeyAlwaysScreenOnMainCamera][PPropAlwaysScreenOnMainCameraLeft] / offsetSubScreen;
                     }
                 }
                 else
@@ -1007,7 +1014,11 @@ namespace CM3D2.SubScreen.Plugin
             color.b = ssParam.fValue[PKeyBSColor][PPropBSColorBlue] * ssParam.fValue[PKeyBSColor][PPropBSColorLuminance];
             color.a = ssParam.fValue[PKeyBSColor][PPropBSColorAlpha];
             goSubScreen.GetComponent<Renderer>().material.color = color;
-            goSsLight.GetComponent<Light>().intensity = ssParam.fValue[PKeyBSColor][PPropScreenLightLuminance];
+			float offsetLight = 1f;
+			if(isVR) {
+				offsetLight = 2f;
+			}
+			goSsLight.GetComponent<Light>().intensity = ssParam.fValue[PKeyBSColor][PPropScreenLightLuminance] * offsetLight;
             if (ssParam.fValue[PKeyBSColor][PPropScreenLightLuminance] > 0)
             {
                 GameMain.Instance.MainLight.GetComponent<Light>().cullingMask &= ~(1 << SubScreenLayer);
