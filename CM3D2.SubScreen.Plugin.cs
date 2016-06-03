@@ -830,7 +830,7 @@ namespace CM3D2.SubScreen.Plugin
                     }
                 }
             }
-            else if ((!isVR && Input.GetKey(KeyCode.A)) || (isVR && Input.GetKey(KeyCode.J)))
+            else if ((!isVR && Input.GetKey(KeyCode.S)) || (isVR && Input.GetKey(KeyCode.K)))
             {
                 if (goMoveTarget.GetComponent<Renderer>().enabled)
                 {
@@ -863,7 +863,7 @@ namespace CM3D2.SubScreen.Plugin
                     }
                 }
             }
-            else if ((!isVR && Input.GetKey(KeyCode.S)) || (isVR && Input.GetKey(KeyCode.K)))
+            else if ((!isVR && Input.GetKey(KeyCode.A)) || (isVR && Input.GetKey(KeyCode.J)))
             {
                 if (goMoveTarget.GetComponent<Renderer>().enabled)
                 {
