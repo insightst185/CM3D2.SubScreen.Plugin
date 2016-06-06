@@ -784,12 +784,13 @@ namespace CM3D2.SubScreen.Plugin
             {
                 speed = HighSpeed;
             }
+
             if (Input.GetKeyUp (KeyCode.V)) {
                 isCameraToggle = !isCameraToggle;
             }
             goMoveTarget = (isCameraToggle) ? goSubScreen : goSubCam;
 
-            if (Input.GetKey(KeyCode.I))
+            if ((!isVR && Input.GetKey(KeyCode.W)) || (isVR && Input.GetKey(KeyCode.I)))
             {
                 if (goMoveTarget.GetComponent<Renderer>().enabled)
                 {
@@ -822,7 +823,7 @@ namespace CM3D2.SubScreen.Plugin
                     }
                 }
             }
-            else if (Input.GetKey(KeyCode.J))
+            else if ((!isVR && Input.GetKey(KeyCode.S)) || (isVR && Input.GetKey(KeyCode.K)))
             {
                 if (goMoveTarget.GetComponent<Renderer>().enabled)
                 {
@@ -855,7 +856,7 @@ namespace CM3D2.SubScreen.Plugin
                     }
                 }
             }
-            else if (Input.GetKey(KeyCode.K))
+            else if ((!isVR && Input.GetKey(KeyCode.A)) || (isVR && Input.GetKey(KeyCode.J)))
             {
                 if (goMoveTarget.GetComponent<Renderer>().enabled)
                 {
@@ -888,7 +889,7 @@ namespace CM3D2.SubScreen.Plugin
                     }
                 }
             }
-            else if (Input.GetKey(KeyCode.L))
+            else if ((!isVR && Input.GetKey(KeyCode.D)) || (isVR && Input.GetKey(KeyCode.L)))
             {
                 if (goMoveTarget.GetComponent<Renderer>().enabled)
                 {
@@ -921,7 +922,7 @@ namespace CM3D2.SubScreen.Plugin
                     }
                 }
             }
-            else if (Input.GetKey(KeyCode.U))
+            else if ((!isVR && Input.GetKey(KeyCode.Q)) || (isVR && Input.GetKey(KeyCode.U)))
             {
                 if (goMoveTarget.GetComponent<Renderer>().enabled)
                 {
@@ -945,7 +946,7 @@ namespace CM3D2.SubScreen.Plugin
                     }
                 }
             }
-            else if (Input.GetKey(KeyCode.O))
+            else if ((!isVR && Input.GetKey(KeyCode.E)) || (isVR && Input.GetKey(KeyCode.O)))
             {
                 if (goMoveTarget.GetComponent<Renderer>().enabled)
                 {
