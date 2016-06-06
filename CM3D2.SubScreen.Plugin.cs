@@ -790,6 +790,13 @@ namespace CM3D2.SubScreen.Plugin
             }
             goMoveTarget = (isCameraToggle) ? goSubScreen : goSubCam;
 
+            if(Input.GetKeyUp (KeyCode.M)) {
+                presetName = currentBg + "_" + currentYotogiName;
+                DebugLog("Memory quick scene preset. saved", presetName);
+                SavePreset(presetName);
+                SaveScenePreset(presetName);
+            }
+
             if ((!isVR && Input.GetKey(KeyCode.W)) || (isVR && Input.GetKey(KeyCode.I)))
             {
                 if (goMoveTarget.GetComponent<Renderer>().enabled)
@@ -1618,23 +1625,7 @@ namespace CM3D2.SubScreen.Plugin
             outRect.width = baseRect.width / 2 - pv.Margin;
             if (GUI.Button(outRect, "保存", bStyle))
             {
-                if (presetName.Equals(""))
-                {
-                    // 名無しはNG
-                    return;
-                }
-                if (presets != null && presets.ContainsKey(presetName))
-                {
-                    // 同名は削除してから保存
-                    RemovePreset(presetName);
-                    savePresetXml();
-                    menuType = MenuType.Main;
-                }
-                else
-                {
-                    savePresetXml();
-                    menuType = MenuType.Main;
-                }
+                SavePreset(presetName);
             }
             outRect.x += outRect.width + pv.Margin;
             if (GUI.Button(outRect, "閉じる", bStyle))
@@ -2037,7 +2028,27 @@ namespace CM3D2.SubScreen.Plugin
             }
             xdoc.Save(presetXmlFileName);
         }
-        
+
+        private void SavePreset(string presetName) {
+            if (presetName.Equals(""))
+            {
+                // 名無しはNG
+                return;
+            }
+            if (presets != null && presets.ContainsKey(presetName))
+            {
+                // 同名は削除してから保存
+                RemovePreset(presetName);
+                savePresetXml();
+                menuType = MenuType.Main;
+            }
+            else
+            {
+                savePresetXml();
+                menuType = MenuType.Main;
+            }
+        }
+
         private void SaveScenePreset(string presetName)
         {
             RemoveScenePreset();
