@@ -25,6 +25,8 @@ namespace CM3D2.SubScreen.Plugin
 
         private bool isChubLip = false;
 		private bool isVR = false;
+        private bool isCameraToggle = false;
+
 
         public readonly string WinFileName = Directory.GetCurrentDirectory() + @"\UnityInjector\Config\SubScreen.png";
 
@@ -202,6 +204,8 @@ namespace CM3D2.SubScreen.Plugin
         private GameObject goSsLight;
 
         private GameObject goSsFrontFilter;
+
+        private GameObject goMoveTarget;
 
         private RenderTexture rTex;
 
@@ -780,103 +784,196 @@ namespace CM3D2.SubScreen.Plugin
             {
                 speed = HighSpeed;
             }
-            if (Input.GetKey(KeyCode.W))
+
+            if (Input.GetKeyUp (KeyCode.V)) {
+                isCameraToggle = !isCameraToggle;
+            }
+            goMoveTarget = (isCameraToggle) ? goSubScreen : goSubCam;
+
+            if(Input.GetKeyUp (KeyCode.M)) {
+                presetName = currentBg + "_" + currentYotogiName;
+                DebugLog("Memory quick scene preset. saved", presetName);
+                SavePreset(presetName);
+                SaveScenePreset(presetName);
+            }
+
+            if ((!isVR && Input.GetKey(KeyCode.W)) || (isVR && Input.GetKey(KeyCode.I)))
             {
-                if (goSubCam.GetComponent<Renderer>().enabled)
+                if (goMoveTarget.GetComponent<Renderer>().enabled)
                 {
                     if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
                     {
-                        goSubCam.transform.Rotate(new Vector3(speed * Time.deltaTime * -20f, 0f, 0f));
+                        goMoveTarget.transform.Rotate(new Vector3(speed * Time.deltaTime * -20f, 0f, 0f));
+                        if(isCameraToggle) {
+                            ssParam.fValue[PKeyBSAngle][PPropBSAngleX] = goSubScreen.transform.eulerAngles.x;
+                            ssParam.fValue[PKeyBSAngle][PPropBSAngleY] = goSubScreen.transform.eulerAngles.y;
+                            ssParam.fValue[PKeyBSAngle][PPropBSAngleZ] = goSubScreen.transform.eulerAngles.z;
+                        }
                     }
                     else if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
                     {
-                        goSubCam.transform.position -= new Vector3(0, 0, speed * Time.deltaTime);
+                        goMoveTarget.transform.position -= new Vector3(0, 0, speed * Time.deltaTime);
+                        if(isCameraToggle) {
+                            ssParam.fValue[PKeyBSPos][PPropBSPosX] = goSubScreen.transform.position.x;
+                            ssParam.fValue[PKeyBSPos][PPropBSPosY] = goSubScreen.transform.position.y;
+                            ssParam.fValue[PKeyBSPos][PPropBSPosZ] = goSubScreen.transform.position.z;
+                        }
                     }
                     else
                     {
-                        goSubCam.transform.position += goSubCam.transform.TransformDirection(Vector3.forward) * speed * Time.deltaTime;
+                        goMoveTarget.transform.position += goMoveTarget.transform.TransformDirection(Vector3.forward) * speed * Time.deltaTime;
+                        if(isCameraToggle) {
+                            ssParam.fValue[PKeyBSPos][PPropBSPosX] = goSubScreen.transform.position.x;
+                            ssParam.fValue[PKeyBSPos][PPropBSPosY] = goSubScreen.transform.position.y;
+                            ssParam.fValue[PKeyBSPos][PPropBSPosZ] = goSubScreen.transform.position.z;
+                        }
                     }
                 }
             }
-            else if (Input.GetKey(KeyCode.S))
+            else if ((!isVR && Input.GetKey(KeyCode.S)) || (isVR && Input.GetKey(KeyCode.K)))
             {
-                if (goSubCam.GetComponent<Renderer>().enabled)
+                if (goMoveTarget.GetComponent<Renderer>().enabled)
                 {
                     if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
                     {
-                        goSubCam.transform.Rotate(new Vector3(speed * Time.deltaTime * 20f, 0f, 0f));
+                        goMoveTarget.transform.Rotate(new Vector3(speed * Time.deltaTime * 20f, 0f, 0f));
+                        if(isCameraToggle) {
+                            ssParam.fValue[PKeyBSAngle][PPropBSAngleX] = goSubScreen.transform.eulerAngles.x;
+                            ssParam.fValue[PKeyBSAngle][PPropBSAngleY] = goSubScreen.transform.eulerAngles.y;
+                            ssParam.fValue[PKeyBSAngle][PPropBSAngleZ] = goSubScreen.transform.eulerAngles.z;
+                        }
                     }
                     else if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
                     {
-                        goSubCam.transform.position += new Vector3(0, 0, speed * Time.deltaTime);
+                        goMoveTarget.transform.position += new Vector3(0, 0, speed * Time.deltaTime);
+                        if(isCameraToggle) {
+                            ssParam.fValue[PKeyBSPos][PPropBSPosX] = goSubScreen.transform.position.x;
+                            ssParam.fValue[PKeyBSPos][PPropBSPosY] = goSubScreen.transform.position.y;
+                            ssParam.fValue[PKeyBSPos][PPropBSPosZ] = goSubScreen.transform.position.z;
+                        }
                     }
                     else
                     {
-                        goSubCam.transform.position += goSubCam.transform.TransformDirection(Vector3.back) * speed * Time.deltaTime;
+                        goMoveTarget.transform.position += goMoveTarget.transform.TransformDirection(Vector3.back) * speed * Time.deltaTime;
+                        if(isCameraToggle) {
+                            ssParam.fValue[PKeyBSPos][PPropBSPosX] = goSubScreen.transform.position.x;
+                            ssParam.fValue[PKeyBSPos][PPropBSPosY] = goSubScreen.transform.position.y;
+                            ssParam.fValue[PKeyBSPos][PPropBSPosZ] = goSubScreen.transform.position.z;
+                        }
                     }
                 }
             }
-            else if (Input.GetKey(KeyCode.A))
+            else if ((!isVR && Input.GetKey(KeyCode.A)) || (isVR && Input.GetKey(KeyCode.J)))
             {
-                if (goSubCam.GetComponent<Renderer>().enabled)
+                if (goMoveTarget.GetComponent<Renderer>().enabled)
                 {
                     if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
                     {
-                        goSubCam.transform.Rotate(new Vector3(0f, speed * Time.deltaTime * -20f, 0f));
+                        goMoveTarget.transform.Rotate(new Vector3(0f, speed * Time.deltaTime * -20f, 0f));
+                        if(isCameraToggle) {
+                            ssParam.fValue[PKeyBSAngle][PPropBSAngleX] = goSubScreen.transform.eulerAngles.x;
+                            ssParam.fValue[PKeyBSAngle][PPropBSAngleY] = goSubScreen.transform.eulerAngles.y;
+                            ssParam.fValue[PKeyBSAngle][PPropBSAngleZ] = goSubScreen.transform.eulerAngles.z;
+                        }
                     }
                     else if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
                     {
-                        goSubCam.transform.position += new Vector3(speed * Time.deltaTime, 0, 0);
+                        goMoveTarget.transform.position += new Vector3(speed * Time.deltaTime, 0, 0);
+                        if(isCameraToggle) {
+                            ssParam.fValue[PKeyBSPos][PPropBSPosX] = goSubScreen.transform.position.x;
+                            ssParam.fValue[PKeyBSPos][PPropBSPosY] = goSubScreen.transform.position.y;
+                            ssParam.fValue[PKeyBSPos][PPropBSPosZ] = goSubScreen.transform.position.z;
+                        }
                     }
                     else
                     {
-                        goSubCam.transform.position += goSubCam.transform.TransformDirection(Vector3.left) * speed * Time.deltaTime;
+                        goMoveTarget.transform.position += goMoveTarget.transform.TransformDirection(Vector3.left) * speed * Time.deltaTime;
+                        if(isCameraToggle) {
+                            ssParam.fValue[PKeyBSPos][PPropBSPosX] = goSubScreen.transform.position.x;
+                            ssParam.fValue[PKeyBSPos][PPropBSPosY] = goSubScreen.transform.position.y;
+                            ssParam.fValue[PKeyBSPos][PPropBSPosZ] = goSubScreen.transform.position.z;
+                        }
                     }
                 }
             }
-            else if (Input.GetKey(KeyCode.D))
+            else if ((!isVR && Input.GetKey(KeyCode.D)) || (isVR && Input.GetKey(KeyCode.L)))
             {
-                if (goSubCam.GetComponent<Renderer>().enabled)
+                if (goMoveTarget.GetComponent<Renderer>().enabled)
                 {
                     if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
                     {
-                        goSubCam.transform.Rotate(new Vector3(0f, speed * Time.deltaTime * 20f, 0f));
+                        goMoveTarget.transform.Rotate(new Vector3(0f, speed * Time.deltaTime * 20f, 0f));
+                        if(isCameraToggle) {
+                            ssParam.fValue[PKeyBSAngle][PPropBSAngleX] = goSubScreen.transform.eulerAngles.x;
+                            ssParam.fValue[PKeyBSAngle][PPropBSAngleY] = goSubScreen.transform.eulerAngles.y;
+                            ssParam.fValue[PKeyBSAngle][PPropBSAngleZ] = goSubScreen.transform.eulerAngles.z;
+                        }
                     }
                     else if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
                     {
-                        goSubCam.transform.position -= new Vector3(speed * Time.deltaTime, 0, 0);
+                        goMoveTarget.transform.position -= new Vector3(speed * Time.deltaTime, 0, 0);
+                        if(isCameraToggle) {
+                            ssParam.fValue[PKeyBSPos][PPropBSPosX] = goSubScreen.transform.position.x;
+                            ssParam.fValue[PKeyBSPos][PPropBSPosY] = goSubScreen.transform.position.y;
+                            ssParam.fValue[PKeyBSPos][PPropBSPosZ] = goSubScreen.transform.position.z;
+                        }
                     }
                     else
                     {
-                        goSubCam.transform.position += goSubCam.transform.TransformDirection(Vector3.right) * speed * Time.deltaTime;
+                        goMoveTarget.transform.position += goMoveTarget.transform.TransformDirection(Vector3.right) * speed * Time.deltaTime;
+                        if(isCameraToggle) {
+                            ssParam.fValue[PKeyBSPos][PPropBSPosX] = goSubScreen.transform.position.x;
+                            ssParam.fValue[PKeyBSPos][PPropBSPosY] = goSubScreen.transform.position.y;
+                            ssParam.fValue[PKeyBSPos][PPropBSPosZ] = goSubScreen.transform.position.z;
+                        }
                     }
                 }
             }
-            else if (Input.GetKey(KeyCode.Q))
+            else if ((!isVR && Input.GetKey(KeyCode.Q)) || (isVR && Input.GetKey(KeyCode.U)))
             {
-                if (goSubCam.GetComponent<Renderer>().enabled)
+                if (goMoveTarget.GetComponent<Renderer>().enabled)
                 {
                     if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
                     {
-                        goSubCam.transform.position -= new Vector3(0f, speed * Time.deltaTime, 0f);
+                        goMoveTarget.transform.position -= new Vector3(0f, speed * Time.deltaTime, 0f);
+                        if(isCameraToggle) {
+                            ssParam.fValue[PKeyBSPos][PPropBSPosX] = goSubScreen.transform.position.x;
+                            ssParam.fValue[PKeyBSPos][PPropBSPosY] = goSubScreen.transform.position.y;
+                            ssParam.fValue[PKeyBSPos][PPropBSPosZ] = goSubScreen.transform.position.z;
+                        }
                     }
                     else
                     {
-                        goSubCam.transform.position += goSubCam.transform.TransformDirection(Vector3.down) * speed * Time.deltaTime;
+                        goMoveTarget.transform.position += goMoveTarget.transform.TransformDirection(Vector3.down) * speed * Time.deltaTime;
+                        if(isCameraToggle) {
+                            ssParam.fValue[PKeyBSPos][PPropBSPosX] = goSubScreen.transform.position.x;
+                            ssParam.fValue[PKeyBSPos][PPropBSPosY] = goSubScreen.transform.position.y;
+                            ssParam.fValue[PKeyBSPos][PPropBSPosZ] = goSubScreen.transform.position.z;
+                        }
                     }
                 }
             }
-            else if (Input.GetKey(KeyCode.E))
+            else if ((!isVR && Input.GetKey(KeyCode.E)) || (isVR && Input.GetKey(KeyCode.O)))
             {
-                if (goSubCam.GetComponent<Renderer>().enabled)
+                if (goMoveTarget.GetComponent<Renderer>().enabled)
                 {
                     if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
                     {
-                        goSubCam.transform.position += new Vector3(0f, speed * Time.deltaTime, 0f);
+                        goMoveTarget.transform.position += new Vector3(0f, speed * Time.deltaTime, 0f);
+                        if(isCameraToggle) {
+                            ssParam.fValue[PKeyBSPos][PPropBSPosX] = goSubScreen.transform.position.x;
+                            ssParam.fValue[PKeyBSPos][PPropBSPosY] = goSubScreen.transform.position.y;
+                            ssParam.fValue[PKeyBSPos][PPropBSPosZ] = goSubScreen.transform.position.z;
+                        }
                     }
                     else
                     {
-                        goSubCam.transform.position += goSubCam.transform.TransformDirection(Vector3.up) * speed * Time.deltaTime;
+                        goMoveTarget.transform.position += goMoveTarget.transform.TransformDirection(Vector3.up) * speed * Time.deltaTime;
+                        if(isCameraToggle) {
+                            ssParam.fValue[PKeyBSPos][PPropBSPosX] = goSubScreen.transform.position.x;
+                            ssParam.fValue[PKeyBSPos][PPropBSPosY] = goSubScreen.transform.position.y;
+                            ssParam.fValue[PKeyBSPos][PPropBSPosZ] = goSubScreen.transform.position.z;
+                        }
                     }
                 }
             }
@@ -1528,23 +1625,7 @@ namespace CM3D2.SubScreen.Plugin
             outRect.width = baseRect.width / 2 - pv.Margin;
             if (GUI.Button(outRect, "保存", bStyle))
             {
-                if (presetName.Equals(""))
-                {
-                    // 名無しはNG
-                    return;
-                }
-                if (presets != null && presets.ContainsKey(presetName))
-                {
-                    // 同名は削除してから保存
-                    RemovePreset(presetName);
-                    savePresetXml();
-                    menuType = MenuType.Main;
-                }
-                else
-                {
-                    savePresetXml();
-                    menuType = MenuType.Main;
-                }
+                SavePreset(presetName);
             }
             outRect.x += outRect.width + pv.Margin;
             if (GUI.Button(outRect, "閉じる", bStyle))
@@ -1947,7 +2028,27 @@ namespace CM3D2.SubScreen.Plugin
             }
             xdoc.Save(presetXmlFileName);
         }
-        
+
+        private void SavePreset(string presetName) {
+            if (presetName.Equals(""))
+            {
+                // 名無しはNG
+                return;
+            }
+            if (presets != null && presets.ContainsKey(presetName))
+            {
+                // 同名は削除してから保存
+                RemovePreset(presetName);
+                savePresetXml();
+                menuType = MenuType.Main;
+            }
+            else
+            {
+                savePresetXml();
+                menuType = MenuType.Main;
+            }
+        }
+
         private void SaveScenePreset(string presetName)
         {
             RemoveScenePreset();
