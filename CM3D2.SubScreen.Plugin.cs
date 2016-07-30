@@ -21,7 +21,7 @@ namespace CM3D2.SubScreen.Plugin
     PluginVersion("0.3.9.12")]
     public class SubScreen : PluginBase
     {
-        public const string Version = "0.3.9.12";
+        public const string Version = "0.3.9.13";
 
         private bool isChubLip = false;
 		private bool isVR = false;
@@ -148,7 +148,10 @@ namespace CM3D2.SubScreen.Plugin
             SceneDance_STMT = 26,
 
             // ダンス5:rhythmix to you
-            SceneDance_RYFU = 28
+            SceneDance_RYFU = 28,
+
+            // ダンス6:happy!happy!スキャンダル
+            SceneDance_HAPY = 30
         }
 
         private enum TargetLevelCbl

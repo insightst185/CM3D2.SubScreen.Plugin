@@ -9,6 +9,10 @@ UnityInjectorが導入済みであること。
 Download ZIPボタンを押してzipファイルをダウンロードします。  
 zipファイルの中にあるUnityInjectorフォルダを、CM3D2フォルダにコピーしてください。
 
+配布するDLLはChu-B Lip版に対応していません。
+配布するソースはChu-B Lip版に対応してます。
+お手数ですがChu-B Lip版使用の場合は、各自コンパイルしてください
+
 <span style="color:red;font-weight:bold;">注意</span>  
 0.3.9.10で機能追加した関係で、SubScreenParam.xmlに要素・属性が追加されています。  
 以前のバージョンを利用されている方は、SubScreenParam.xmlを新しいものに入れ替えて利用ください
@@ -141,8 +145,15 @@ Pauseキーでメニューが開きます。
 
 **Alt + W, S, A, D, Q, E** 回転します。
 
+**VR版ではW, S, A, D, Q, Eは
+**        I, K, J, L, U, Oです
 
 ##更新履歴
+####0.3.9.13
+* happy!happy!スキャンダルに対応 (Chu-B Lip版は未対応）
+* Vキーでサブカメラ／サブスクリーンをトグルして、それぞれ移動／回転可能に
+* バグをいくつか修正
+
 ####0.3.9.12
 * with Chu-B Lip版で夜伽スキル毎のプリセ切替が正しく動いていなかったのを修正 プラグイン名を修正
 
