@@ -89,4 +89,7 @@
         <value prop_name="EYE_MOVE.s" min="-2.0" max="2.0" default="0.0" label="右目左右" type="num" />
         <value prop_name="EYE_MOVE.t" min="-2.0" max="2.0" default="0.0" label="右目前後" type="num" />
     </mod>
+        <mod id="MAIN_CAMERA" description ="メインカメラ補正実験" type="toggle">
+        <value prop_name="MAIN_CAMERA.fieldOfView" min="1.0" max="180" default="45" label="視野角" type="int" />
+    </mod>
 </mods>

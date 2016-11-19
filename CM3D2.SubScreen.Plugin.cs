@@ -18,10 +18,10 @@ namespace CM3D2.SubScreen.Plugin
     PluginFilter("CM3D2OHx86"),
     PluginFilter("CM3D2OHVRx64"),
     PluginName("CM3D2 SubScreen"),
-    PluginVersion("0.3.9.14")]
+    PluginVersion("0.3.9.16")]
     public class SubScreen : PluginBase
     {
-        public const string Version = "0.3.9.14";
+        public const string Version = "0.3.9.16";
 
         private bool isChubLip = false;
 		private bool isVR = false;
@@ -124,6 +124,9 @@ namespace CM3D2.SubScreen.Plugin
         const string PPropBSColorBlue = "BS_COLOR.b";
         const string PPropBSColorAlpha = "BS_COLOR.a";
 
+        const string PKeyMainCamera = "MAIN_CAMERA";
+        const string PPropMainCameraFieldOfView = "MAIN_CAMERA.fieldOfView";
+
         private enum TargetLevel
         {
             //ダンス1:ドキドキ☆Fallin' Love
@@ -146,6 +149,9 @@ namespace CM3D2.SubScreen.Plugin
 
             // ダンス4:stellar my tears
             SceneDance_STMT = 26,
+
+            // 撮影モード
+            ScenePhot = 27,
 
             // ダンス5:rhythmix to you
             SceneDance_RYFU = 28,
@@ -196,6 +202,25 @@ namespace CM3D2.SubScreen.Plugin
             SaveScenePreset
         }
 
+        private bool isDanceScene(int level){
+            if(  level == (int)TargetLevel.SceneDance_DDFL
+              || level == (int)TargetLevel.SceneDance_ETYL
+              || level == (int)TargetLevel.SceneDance_SCLP
+              || level == (int)TargetLevel.SceneDance_STMT
+              || level == (int)TargetLevel.SceneDance_RYFU
+              || level == (int)TargetLevel.SceneDance_HAPY
+              || level == (int)TargetLevel.SceneDance_HAPYDX
+              || level == (int)TargetLevel.SceneDance_CKTC
+            )
+            {
+                return (true);
+            }
+            else
+            {
+                return (false);
+            }
+        }
+
         MenuType menuType = MenuType.None;
 
         const float LowSpeed = 1f;
@@ -219,6 +244,8 @@ namespace CM3D2.SubScreen.Plugin
         private RenderTexture rTex;
 
         private Maid maid;
+        
+        private int level;
 
         private SubScreenParam ssParam;
 
@@ -567,6 +594,7 @@ namespace CM3D2.SubScreen.Plugin
             {
                 return;
             }
+            this.level = level;
             menuType = MenuType.None;
             bsEnable = false;
             screenCreated = false;
@@ -591,10 +619,38 @@ namespace CM3D2.SubScreen.Plugin
             }
         }
 
+        private void LateUpdate()
+        {
+            if (!isVR && Input.GetKeyUp (KeyCode.Z) && isDanceScene(level)) {
+                 ssParam.bEnabled[PKeyMainCamera] = !ssParam.bEnabled[PKeyMainCamera];
+//               DebugLog("fieldOfView",GameMain.Instance.MainCamera.GetComponent<Camera>().fieldOfView.ToString());
+            }
+            if(ssParam.bEnabled[PKeyMainCamera])
+            {
+                GameMain.Instance.MainCamera.GetComponent<Camera>().fieldOfView = ssParam.fValue[PKeyMainCamera][PPropMainCameraFieldOfView];
+            }
+            
+//            if (!isVR && Input.GetKeyUp (KeyCode.X) && isDanceScene(level)) {
+//                ssParam.bEnabled[PKeyMainLight] = !ssParam.bEnabled[PKeyMainLight];
+//            }
+//            if (ssParam.bEnabled[PKeyMainLight])
+//            {
+//                Light mainLight = GameMain.Instance.MainLight.GetComponent<Light>();
+//                mainLight.type = LightType.Directional;
+//                Color color = mainLight.color;
+//                color.r = ssParam.fValue[PKeyMainLight][PPropMainLightColorRed] * ssParam.fValue[PKeyMainLight][PPropMainLightLuminance];
+//                color.g = ssParam.fValue[PKeyMainLight][PPropMainLightColorGreen] * ssParam.fValue[PKeyMainLight][PPropMainLightLuminance];
+//                color.b = ssParam.fValue[PKeyMainLight][PPropMainLightColorBlue] * ssParam.fValue[PKeyMainLight][PPropMainLightLuminance];
+//                mainLight.color = color;
+//            }
+
+        }
+
         private void Update()
         {
-            if ((!isChubLip && !Enum.IsDefined(typeof(TargetLevel), Application.loadedLevel))
-              || (isChubLip && !Enum.IsDefined(typeof(TargetLevelCbl), Application.loadedLevel)))
+
+            if ((!isChubLip && !Enum.IsDefined(typeof(TargetLevel), level))
+              || (isChubLip && !Enum.IsDefined(typeof(TargetLevelCbl), level)))
             {
                 if (menuType == MenuType.Main)
                 {
@@ -612,11 +668,11 @@ namespace CM3D2.SubScreen.Plugin
                     this.setScenePreset();
                 }
             }
-            if (ssParam.autoPreset && !isChubLip && Application.loadedLevel == (int)TargetLevel.SceneYotogi)
+            if (ssParam.autoPreset && !isChubLip && level == (int)TargetLevel.SceneYotogi)
             {
                 this.detectSkill();
 
-            } else if (ssParam.autoPreset && isChubLip && Application.loadedLevel == (int)TargetLevelCbl.SceneYotogiWithChubLip){
+            } else if (ssParam.autoPreset && isChubLip && level == (int)TargetLevelCbl.SceneYotogiWithChubLip){
                 // Chu-B Lipの場合
                 this.detectSkillCbl();
             }
@@ -665,7 +721,7 @@ namespace CM3D2.SubScreen.Plugin
 	                eyeMove();
 	            }
             }
-
+            
         }
 
         private void detectSkill() {
@@ -688,21 +744,21 @@ namespace CM3D2.SubScreen.Plugin
 
         private void detectSkillCbl() {
 
-            var skillData = YotogiPlayManagerWithChubLip.GetSelectSkillData();
-            if (skillData != null) {
-                var yotogiName = skillData.skill_name;
-                if (currentYotogiName == null || !yotogiName.Equals(currentYotogiName))
-                {
-                    DebugLog("Yotogi changed", currentYotogiName + " >> " + yotogiName);
-                    currentYotogiName = yotogiName;
-                    this.setScenePreset();
-                }
-            }
+//            var skillData = YotogiPlayManagerWithChubLip.GetSelectSkillData();
+//            if (skillData != null) {
+//                var yotogiName = skillData.skill_name;
+//                if (currentYotogiName == null || !yotogiName.Equals(currentYotogiName))
+//                {
+//                    DebugLog("Yotogi changed", currentYotogiName + " >> " + yotogiName);
+//                    currentYotogiName = yotogiName;
+//                    this.setScenePreset();
+//                }
+//            }
         }
 
         private void setScenePreset() {
 
-            string key = generateSceneKey(Application.loadedLevel.ToString(), currentBg, currentYotogiName);
+            string key = generateSceneKey(level.ToString(), currentBg, currentYotogiName);
             if (scenePresets.ContainsKey(key) && presets.ContainsKey(scenePresets[key]))
             {
                 SetPreset(presets[scenePresets[key]]);
@@ -788,6 +844,7 @@ namespace CM3D2.SubScreen.Plugin
 
         private void InputCheck()
         {
+
             var speed = LowSpeed;
             if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
             {
@@ -1184,7 +1241,7 @@ namespace CM3D2.SubScreen.Plugin
 
         public void OnGUI()
         {
-            if ((!isChubLip && !Enum.IsDefined(typeof(TargetLevel), Application.loadedLevel)) || (isChubLip && !Enum.IsDefined(typeof(TargetLevelCbl), Application.loadedLevel)))
+            if ((!isChubLip && !Enum.IsDefined(typeof(TargetLevel), level)) || (isChubLip && !Enum.IsDefined(typeof(TargetLevelCbl), level)))
             {
                 return;
             }
@@ -2065,7 +2122,7 @@ namespace CM3D2.SubScreen.Plugin
             var xdoc = XDocument.Load(presetXmlFileName);
 
             var scenePreset = new XElement("scenePreset",
-                new XAttribute("level", Application.loadedLevel),
+                new XAttribute("level", level),
                 new XAttribute("bgName", currentBg),
                 new XAttribute("yotogiName", currentYotogiName),
                 presetName);
@@ -2088,7 +2145,7 @@ namespace CM3D2.SubScreen.Plugin
             var xdoc = XDocument.Load(presetXmlFileName);
             IEnumerable<XElement> removeTarget =
                 from el in xdoc.Descendants("scenePreset")
-                where (string)el.Attribute("level") == Application.loadedLevel.ToString()
+                where (string)el.Attribute("level") == level.ToString()
                   && (string)el.Attribute("bgName") == currentBg
                   && (string)el.Attribute("yotogiName") == currentYotogiName
                 select el;

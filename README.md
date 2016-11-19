@@ -9,14 +9,14 @@ UnityInjectorが導入済みであること。
 Download ZIPボタンを押してzipファイルをダウンロードします。  
 zipファイルの中にあるUnityInjectorフォルダを、CM3D2フォルダにコピーしてください。
 
-配布するDLLはChu-B Lip版に対応していません。
-配布するソースはChu-B Lip版に対応してます。
-お手数ですがChu-B Lip版使用の場合は、各自コンパイルしてください
+配布するDLLはChu-B Lip版に対応していません。  
+配布するソースはChu-B Lip版に対応してます。  
+お手数ですがChu-B Lip版使用の場合は、各自コンパイルしてください  
 
 <span style="color:red;font-weight:bold;">注意</span>  
-0.3.9.10で機能追加した関係で、SubScreenParam.xmlに要素・属性が追加されています。  
-以前のバージョンを利用されている方は、SubScreenParam.xmlを新しいものに入れ替えて利用ください
-SubScreenPreset.xmlはそのまま利用できますにゃあ
+0.3.9.15で機能追加した関係で、SubScreenParam.xmlに要素・属性が追加されています。  
+以前のバージョンを利用されている方は、SubScreenParam.xmlを新しいものに入れ替えて利用ください  
+SubScreenPreset.xmlはそのまま利用できますにゃあ  
 
 0.3.9.0で機能追加した関係で、SubScreenParam.xml, SubScreenPreset.xmlとも要素・属性が追加されています。  
 以前のバージョンを利用されている方は、各xmlを削除してからご利用ください。  
@@ -149,6 +149,13 @@ Pauseキーでメニューが開きます。
 **        I, K, J, L, U, Oです
 
 ##更新履歴
+####0.3.9.16
+* unity5対応したつもり  
+
+####0.3.9.15
+* メインカメラの視野角変更スライダーを追加  
+* ダンス中はZキーどON/OFF切り替え可  
+
 ####0.3.9.14
 * happy!happy!スキャンダル豪華版，Can Know Two Closeに対応 (Chu-B Lip版は未対応）
 
