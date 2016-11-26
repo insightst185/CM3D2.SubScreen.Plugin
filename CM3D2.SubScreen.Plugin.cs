@@ -18,10 +18,10 @@ namespace CM3D2.SubScreen.Plugin
     PluginFilter("CM3D2OHx86"),
     PluginFilter("CM3D2OHVRx64"),
     PluginName("CM3D2 SubScreen"),
-    PluginVersion("0.3.9.16")]
+    PluginVersion("0.3.9.17")]
     public class SubScreen : PluginBase
     {
-        public const string Version = "0.3.9.16";
+        public const string Version = "0.3.9.17";
 
         private bool isChubLip = false;
 		private bool isVR = false;
@@ -102,6 +102,18 @@ namespace CM3D2.SubScreen.Plugin
         const string PPropEyeMoveR = "EYE_MOVE.r";
         const string PPropEyeMoveS = "EYE_MOVE.s";
         const string PPropEyeMoveT = "EYE_MOVE.t";
+
+        const string PAddMirror = "ADD_MIRROR";
+        const string PPropAddMirrorH = "ADD_MIRROR.height";
+        const string PPropAddMirrorW = "ADD_MIRROR.width";
+        const string PPropAddMirrorX = "ADD_MIRROR.LocX";
+        const string PPropAddMirrorY = "ADD_MIRROR.LocY";
+        const string PPropAddMirrorZ = "ADD_MIRROR.LocZ";
+        const string PPropAddMirrorx = "ADD_MIRROR.AngX";
+        const string PPropAddMirrorz = "ADD_MIRROR.AngZ";
+        const string PPropAddMirrorO = "ADD_MIRROR.Offset";
+        const string PPropAddMirrorL = "ADD_MIRROR.Lights";
+
 
         const string PKeyBSPos = "BS_POS";
         const string PPropBSPosX = "BS_POS.x";
@@ -281,6 +293,9 @@ namespace CM3D2.SubScreen.Plugin
 
         Dictionary<string, float> currentValues = new Dictionary<string, float>();
         private string currentYotogiName;
+
+        private GameObject mirror;
+        private Material mirrorMaterial;
 
         private class SubScreenParam
         {
@@ -577,9 +592,9 @@ namespace CM3D2.SubScreen.Plugin
 
         private void Awake()
         {
+
             string dataPath = Application.dataPath;
             isChubLip = dataPath.Contains("CM3D2OH");
-
 			isVR = dataPath.Contains("VRx64");
 
             ssParam = new SubScreenParam();
@@ -617,10 +632,18 @@ namespace CM3D2.SubScreen.Plugin
                     SetPreset(presets[scenePresets[key]]);
                 }
             }
+//            createMirror();
+//            resizeMirror();
         }
 
         private void LateUpdate()
         {
+            if ((!isChubLip && !Enum.IsDefined(typeof(TargetLevel), level))
+              || (isChubLip && !Enum.IsDefined(typeof(TargetLevelCbl), level)))
+            {
+                return;
+            }
+
             if (!isVR && Input.GetKeyUp (KeyCode.Z) && isDanceScene(level)) {
                  ssParam.bEnabled[PKeyMainCamera] = !ssParam.bEnabled[PKeyMainCamera];
 //               DebugLog("fieldOfView",GameMain.Instance.MainCamera.GetComponent<Camera>().fieldOfView.ToString());
@@ -719,6 +742,7 @@ namespace CM3D2.SubScreen.Plugin
                 }
                 if(maid != null){
 	                eyeMove();
+//                    resizeMirror();
 	            }
             }
             
@@ -1115,7 +1139,11 @@ namespace CM3D2.SubScreen.Plugin
             DebugLog("SetLocalTexture:", filePath);
             WWW file = new WWW("file://" + filePath);
             yield return file;
-            gameObject.GetComponent<Renderer>().material.mainTexture = file.texture;
+            try{
+                gameObject.GetComponent<Renderer>().material.mainTexture = file.texture;
+            }
+            catch(NullReferenceException ){
+            }
         }
 
         public void onClickButton(String key)
@@ -1598,7 +1626,7 @@ namespace CM3D2.SubScreen.Plugin
                 ssParam.fValue[PKeySubCamera][PPropSubCameraAngY] = preset.dParams[PKeySubCamera].dValues[PPropSubCameraAngY];
                 ssParam.fValue[PKeySubCamera][PPropSubCameraAngZ] = preset.dParams[PKeySubCamera].dValues[PPropSubCameraAngZ];
             }
-            catch(KeyNotFoundException e){
+            catch(KeyNotFoundException ){
                 DebugLog("nyaaa");
             }
 
@@ -2275,6 +2303,34 @@ namespace CM3D2.SubScreen.Plugin
         	}
         }
         
+        private void createMirror(){
+            mirrorMaterial = new Material(Shader.Find("Mirror"));
+            mirror = GameObject.CreatePrimitive(PrimitiveType.Plane);
+            mirror.GetComponent<Renderer>().material = mirrorMaterial;
+            mirror.AddComponent<MirrorReflection2>();
+            MirrorReflection2 mirrorRefleftion2 = mirror.GetComponent<MirrorReflection2>();
+            mirrorRefleftion2.m_TextureSize = 2048;
+            mirrorRefleftion2.m_ClipPlaneOffset = ssParam.fValue[PAddMirror][PPropAddMirrorO];
+            mirrorRefleftion2.m_DisablePixelLights = ssParam.bEnabled[PKeyAlwaysLookAtMaid];
+            mirror.GetComponent<Renderer>().enabled = false;
+        }
+
+        private void resizeMirror(){
+            if(ssParam.bEnabled[PAddMirror]){
+                mirror.transform.localScale = new Vector3(ssParam.fValue[PAddMirror][PPropAddMirrorW], 1.0f, ssParam.fValue[PAddMirror][PPropAddMirrorH]);
+                mirror.transform.localPosition = new Vector3(ssParam.fValue[PAddMirror][PPropAddMirrorX], ssParam.fValue[PAddMirror][PPropAddMirrorY], ssParam.fValue[PAddMirror][PPropAddMirrorZ]);
+                mirror.transform.localEulerAngles = new Vector3(ssParam.fValue[PAddMirror][PPropAddMirrorx], 0f, ssParam.fValue[PAddMirror][PPropAddMirrorz]);
+                MirrorReflection2 mirrorRefleftion2 = mirror.GetComponent<MirrorReflection2>();
+                mirrorRefleftion2.m_ClipPlaneOffset = ssParam.fValue[PAddMirror][PPropAddMirrorO];
+                mirrorRefleftion2.m_DisablePixelLights = ssParam.bEnabled[PKeyAlwaysLookAtMaid];
+                mirror.GetComponent<Renderer>().enabled = true;
+            }
+            else{
+                mirror.GetComponent<Renderer>().enabled = false;
+            }
+        }
+
+
          public static class Assert
     {
         [System.Diagnostics.Conditional("DEBUG")]
