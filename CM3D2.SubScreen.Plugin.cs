@@ -18,10 +18,10 @@ namespace CM3D2.SubScreen.Plugin
     PluginFilter("CM3D2OHx86"),
     PluginFilter("CM3D2OHVRx64"),
     PluginName("CM3D2 SubScreen"),
-    PluginVersion("0.3.9.17")]
+    PluginVersion("0.3.9.18")]
     public class SubScreen : PluginBase
     {
-        public const string Version = "0.3.9.17";
+        public const string Version = "0.3.9.18";
 
         private bool isChubLip = false;
 		private bool isVR = false;
@@ -175,7 +175,11 @@ namespace CM3D2.SubScreen.Plugin
             SceneDance_HAPYDX = 31,
 
             // ダンス7:Can Know Two Close
-            SceneDance_CKTC = 32
+            SceneDance_CKTC = 32,
+
+            SceneDance_SSE = 34,
+            SceneDance_SSEDX = 35
+
         }
 
         private enum TargetLevelCbl
